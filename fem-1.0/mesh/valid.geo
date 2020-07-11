@@ -1,0 +1,15 @@
+cl__1 = 0.2;
+Point(1) = {0, -0.5, 0, 0.1};
+Point(2) = {5, -0.5, 0, 0.1};
+Point(3) = {5, 0.5, 0, 0.1};
+Point(4) = {0, 0.5, 0, 0.1};
+Line(1) = {1, 4};
+Line(2) = {4, 3};
+Line(3) = {3, 2};
+Line(4) = {2, 1};
+Line Loop(6) = {2, 3, 4, 1};
+Plane Surface(6) = {6};
+Physical Line("neumann 1") = {2, 4};
+Physical Line("neumann 24") = {1};
+Physical Line("neumann -24") = {3};
+Physical Surface(7) = {6};
