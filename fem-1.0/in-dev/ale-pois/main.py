@@ -2,9 +2,9 @@
 
 import os
 
-os.environ["MKL_NUM_THREADS"] = "8" 
-os.environ["NUMEXPR_NUM_THREADS"] = "8" 
-os.environ["OMP_NUM_THREADS"] = "8" 
+# os.environ["MKL_NUM_THREADS"] = "8"
+# os.environ["NUMEXPR_NUM_THREADS"] = "8"
+# os.environ["OMP_NUM_THREADS"] = "8"
 
 import scipy as sp
 from scipy import linalg
@@ -14,8 +14,22 @@ import meshio
 import semiLagrangean as sl
 from timeit import default_timer as timer
 
+
+
+
 time_start = timer()
 
+
+sim_case = 'poiseuilleALE'
+
+import importlib.util
+spec = importlib.util.spec_from_file_location("resultsdir",
+        "/home/luis/fempkg/fem-1.0/resultsdir.py")
+dir = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(dir)
+dir.make_dir(sim_case)
+
+exit()
 
 cwd = os.getcwd()
 
@@ -153,14 +167,14 @@ for i in Boundary:
     vy[j] = 0
     if x[j] == 0:
         vx[j] = v_in
-    if y[j] == 1 or y[j] == 0: 
+    if y[j] == 1 or y[j] == 0:
         vx[j] = 0.
 
 
 
 
 Minv = sp.linalg.inv(M)
-Wz_old = sp.dot(Minv, (sp.dot(Gx, vy) - sp.dot(Gy, vx))) 
+Wz_old = sp.dot(Minv, (sp.dot(Gx, vy) - sp.dot(Gy, vx)))
 
 K_psi = sp.copy(K)
 ccpsi = sp.zeros(nodes)
@@ -201,13 +215,13 @@ print("Neighbour structures: ", time_end_neighbour - time_start_neighbour)
 
 time_avg_loop = 0
 for t in range(0, tempo-1):
-    
+
     time_start_loop = timer()
     print()
     print("Solving System " + str((float(t)/(tempo-1))*100) + "%")
 
     time_start_smooth = timer()
-    
+
     if p_smooth != -1:
 #        vx_smooth, vy_smooth = Gm.smoothMesh(neighbour_nodes, malha, x, y, dt)
         vx_smooth, vy_smooth = Gm.weighted_smoothMesh(neighbour_nodes, Boundary, x, y, dt)
@@ -229,8 +243,8 @@ for t in range(0, tempo-1):
         vxAle[index] = 0
         vyAle[index] = 0
         vy[index] = 0
-        if x[index] == 0: 
-            vx[index] = v_in  
+        if x[index] == 0:
+            vx[index] = v_in
         if y[index] == 1 or y[index] == 0:
             vx[index] = 0
 
@@ -252,9 +266,9 @@ for t in range(0, tempo-1):
 
 
     time_start_wz = timer()
-    
+
     # B.C. Vorticidade
-    Wcc = sp.dot(Minv, (sp.dot(Gx, vy) - sp.dot(Gy, vx))) 
+    Wcc = sp.dot(Minv, (sp.dot(Gx, vy) - sp.dot(Gy, vx)))
     ccomega = sp.zeros(nodes)
 
 
@@ -306,7 +320,7 @@ for t in range(0, tempo-1):
         F_psi[index] = psi_bc[index]
 
     Psi_new = sp.linalg.solve(K_psi, F_psi)
-    
+
     time_end_psi = timer()
     print("Psi solution time: ", time_end_psi - time_start_psi)
 
@@ -321,7 +335,7 @@ for t in range(0, tempo-1):
     # Calculo de Vx e Vy
     vx = sp.dot(Minv, sp.dot(Gy, Psi_new))
     vy = -1.0 * sp.dot(Minv, sp.dot(Gx, Psi_new))
-    
+
     time_end_loop = timer()
     time_avg_loop += time_end_loop - time_start_loop
     print("Iteration time: ", time_end_loop - time_start_loop)
