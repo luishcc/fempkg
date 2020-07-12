@@ -4,22 +4,32 @@ import sys
 _PATH = os.path.expanduser('~') + '/fempkg/results/'
 
 
-def check_dir(_path):
-
-    return os.path.isdir(_path)
-
-
 def make_dir(_name):
-    dir = _name + '-0'
-    i = 1
-    while check_dir(_PATH + dir):
-        dir = dir.split('-')[0] + '-'+str(i)
-        print(dir)
-        i+=1
-    os.mkdir(_PATH + dir)
-    os.mkdir(_PATH + dir + '/vtk')
+  dir = _name + '-0'
+  i = 1
+  while os.path.isdir(_PATH + dir):
+    dir = dir.split('-')[0] + '-'+str(i)
+    i+=1
+
+  results_path = _PATH + dir
+  os.mkdir(results_path)
+  os.mkdir(results_path + '/vtk')
+  return results_path
+
+def sim_info_files(_path, _info):
+
+  _file1 = open('/'.join((_path,'info.txt')), 'w+')
+  _file1.write(' Simulation Parameters Info:\n\n')
+  for data in _info.items():
+    _file1.write('{}: {}\n'.format(data[0], data[1]))
+  _file1.close()
+
+  from shutil import copy
+  copy(sys.argv[0], _path)
+  copy(_info['Mesh File'], _path)
+
 
 
 if __name__ == '__main__':
-    name = 'test'
-    make_dir(name)
+  name = 'test'
+  make_dir(name)
