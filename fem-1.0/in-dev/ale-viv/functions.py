@@ -1,14 +1,5 @@
 import scipy as sp
 
-def  move_cylinder(_nodes, _y, _y_max, _f_0, _t, _dt):
-  vel = 2 * sp.pi * _f_0 * _y_max * sp.cos(2*sp.pi*_f_0*_t)
-  _center = 0
-  _len_cylinder = len(_nodes)
-  for i in _nodes:
-    _y[i] = _y[i] + vel*_dt
-    _center += _y[i] / _len_cylinder
-  return _y, _center, vel
-
 def fem_matrix(_x, _y, _numele, _numnode, _ien):
   k_local = sp.zeros((3, 3), dtype="float64")
   m_local = sp.array([[2, 1, 1], [1, 2, 1], [1, 1, 2]], dtype="float64")

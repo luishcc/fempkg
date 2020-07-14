@@ -18,8 +18,11 @@ def make_dir(_name):
 
 def sim_info_files(_path, _info):
 
+  from datetime import datetime
+  date = datetime.now().strftime("%H:%M:%S %d/%m/%Y")
   _file1 = open('/'.join((_path,'info.txt')), 'w+')
   _file1.write(' Simulation Parameters Info:\n\n')
+  _file1.write(' Time started: {}\n\n'.format(date))
   for data in _info.items():
     _file1.write('{}: {}\n'.format(data[0], data[1]))
   _file1.close()

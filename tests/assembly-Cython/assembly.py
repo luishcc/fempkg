@@ -1,20 +1,6 @@
 import scipy as sp
-from libc.math cimport sin, cos, pi
 
-cpdef  move_cylinder(double[:] _nodes, _y,
-                    double _y_max, _f_0, _t, _dt):
-  cdef double vel, _center
-  cdef int _len_cylinder, i
-
-  vel = 2 * pi*_f_0*_y_max*cos(2*pi*_f_0*_t)
-  _center = 0
-  _len_cylinder = len(_nodes)
-  for i in _nodes:
-    _y[i] = _y[i] + vel*_dt
-    _center += _y[i] / _len_cylinder
-  return _y, _center, vel
-
-cdef fem_matrix(_x, _y, _numele, _numnode, _ien):
+def fem_matrix(_x, _y, _numele, _numnode, _ien):
   k_local = sp.zeros((3, 3), dtype="float64")
   m_local = sp.array([[2, 1, 1], [1, 2, 1], [1, 1, 2]], dtype="float64")
   gx_local = sp.zeros((3, 3), dtype="float64")
@@ -64,3 +50,6 @@ cdef fem_matrix(_x, _y, _numele, _numnode, _ien):
 
 
   return  k_global, m_global, gx_global, gy_global
+
+def fem_matrix_sparse(_x, _y, _numele, _numnode, _ien):
+    pass
