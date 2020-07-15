@@ -91,7 +91,7 @@ def lin2d(num_x, Lx, num_y, Ly):
     dy = float(Ly) / num_y
     x = np.zeros((num_x+1)*(num_y+1))
     y = np.zeros((num_x+1)*(num_y+1))
-    IEN = np.zeros(((num_x)*(num_y), 4), dtype='int')
+    IEN = np.zeros(((num_x)*(num_y), 4), dtype=np.uint)
     k = 0
     for j in range(0, (num_x+1)*(num_y+1), num_x+1):
         for i in range(0, num_x+1):
@@ -182,7 +182,7 @@ def exp2d(num_x, Lx, num_y, Ly):
 
 def ret_tri(ien):
     num = len(ien)
-    ient = np.zeros((num*2, 3), dtype="int32")
+    ient = np.zeros((num*2, 3), dtype=np.uint)
     ient[0:num] =  np.delete(ien, 3, axis=1)
     ient[num:len(ient)] = np.delete(ien, 1, axis=1)
     return ient

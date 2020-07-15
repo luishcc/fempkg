@@ -1926,6 +1926,9 @@ static CYTHON_INLINE PyObject *__pyx_capsule_create(void *p, const char *sig);
 /* CIntToPy.proto */
 static CYTHON_INLINE PyObject* __Pyx_PyInt_From_int(int value);
 
+/* CIntToPy.proto */
+static CYTHON_INLINE PyObject* __Pyx_PyInt_From_unsigned_long(unsigned long value);
+
 /* RealImag.proto */
 #if CYTHON_CCOMPLEX
   #ifdef __cplusplus
@@ -2038,6 +2041,9 @@ __pyx_memoryview_copy_new_contig(const __Pyx_memviewslice *from_mvs,
 static CYTHON_INLINE int __Pyx_PyInt_As_int(PyObject *);
 
 /* CIntFromPy.proto */
+static CYTHON_INLINE unsigned long __Pyx_PyInt_As_unsigned_long(PyObject *);
+
+/* CIntFromPy.proto */
 static CYTHON_INLINE long __Pyx_PyInt_As_long(PyObject *);
 
 /* CIntToPy.proto */
@@ -2073,7 +2079,7 @@ static int __Pyx_ValidateAndInit_memviewslice(
 static CYTHON_INLINE __Pyx_memviewslice __Pyx_PyObject_to_MemoryviewSlice_ds_double(PyObject *, int writable_flag);
 
 /* ObjectToMemviewSlice.proto */
-static CYTHON_INLINE __Pyx_memviewslice __Pyx_PyObject_to_MemoryviewSlice_dsds_int(PyObject *, int writable_flag);
+static CYTHON_INLINE __Pyx_memviewslice __Pyx_PyObject_to_MemoryviewSlice_dsds_unsigned_long(PyObject *, int writable_flag);
 
 /* ObjectToMemviewSlice.proto */
 static CYTHON_INLINE __Pyx_memviewslice __Pyx_PyObject_to_MemoryviewSlice_dsds_double(PyObject *, int writable_flag);
@@ -2175,7 +2181,7 @@ static void __pyx_memoryview_slice_assign_scalar(__Pyx_memviewslice *, int, size
 static void __pyx_memoryview__slice_assign_scalar(char *, Py_ssize_t *, Py_ssize_t *, int, size_t, void *); /*proto*/
 static PyObject *__pyx_unpickle_Enum__set_state(struct __pyx_MemviewEnum_obj *, PyObject *); /*proto*/
 static __Pyx_TypeInfo __Pyx_TypeInfo_double = { "double", NULL, sizeof(double), { 0 }, 0, 'R', 0, 0 };
-static __Pyx_TypeInfo __Pyx_TypeInfo_int = { "int", NULL, sizeof(int), { 0 }, 0, IS_UNSIGNED(int) ? 'U' : 'I', IS_UNSIGNED(int), 0 };
+static __Pyx_TypeInfo __Pyx_TypeInfo_unsigned_long = { "unsigned long", NULL, sizeof(unsigned long), { 0 }, 0, IS_UNSIGNED(unsigned long) ? 'U' : 'I', IS_UNSIGNED(unsigned long), 0 };
 #define __Pyx_MODULE_NAME "cyassembly"
 extern int __pyx_module_is_main_cyassembly;
 int __pyx_module_is_main_cyassembly = 0;
@@ -2214,13 +2220,13 @@ static const char __pyx_k_test[] = "__test__";
 static const char __pyx_k_ASCII[] = "ASCII";
 static const char __pyx_k_class[] = "__class__";
 static const char __pyx_k_dtype[] = "dtype";
-static const char __pyx_k_empty[] = "empty";
 static const char __pyx_k_error[] = "error";
 static const char __pyx_k_flags[] = "flags";
 static const char __pyx_k_numpy[] = "numpy";
 static const char __pyx_k_range[] = "range";
 static const char __pyx_k_shape[] = "shape";
 static const char __pyx_k_start[] = "start";
+static const char __pyx_k_zeros[] = "zeros";
 static const char __pyx_k_encode[] = "encode";
 static const char __pyx_k_format[] = "format";
 static const char __pyx_k_import[] = "__import__";
@@ -2343,7 +2349,6 @@ static PyObject *__pyx_kp_s_cyassembly_pyx;
 static PyObject *__pyx_n_s_dict;
 static PyObject *__pyx_n_s_dtype;
 static PyObject *__pyx_n_s_dtype_is_object;
-static PyObject *__pyx_n_s_empty;
 static PyObject *__pyx_n_s_encode;
 static PyObject *__pyx_n_s_enumerate;
 static PyObject *__pyx_n_s_error;
@@ -2415,6 +2420,7 @@ static PyObject *__pyx_n_s_unpack;
 static PyObject *__pyx_n_s_update;
 static PyObject *__pyx_n_s_x;
 static PyObject *__pyx_n_s_y;
+static PyObject *__pyx_n_s_zeros;
 static PyObject *__pyx_pf_10cyassembly_fem_matrix(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v__x, PyObject *__pyx_v__y, PyObject *__pyx_v__numele, PyObject *__pyx_v__numnode, PyObject *__pyx_v__ien); /* proto */
 static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, Py_buffer *__pyx_v_info, int __pyx_v_flags); /* proto */
 static void __pyx_pf_5numpy_7ndarray_2__releasebuffer__(PyArrayObject *__pyx_v_self, Py_buffer *__pyx_v_info); /* proto */
@@ -2504,12 +2510,12 @@ static PyObject *__pyx_codeobj__27;
 static PyObject *__pyx_codeobj__34;
 /* Late includes */
 
-/* "cyassembly.pyx":8
+/* "cyassembly.pyx":6
  * cimport numpy as np
  * 
  * def fem_matrix(_x, _y, _numele, _numnode, _ien):             # <<<<<<<<<<<<<<
- *   k_global = np.empty((_numnode, _numnode), dtype="float64")
- *   m_global = np.empty((_numnode, _numnode), dtype="float64")
+ *     k_global = np.zeros((_numnode, _numnode), dtype="float64")
+ *     m_global = np.zeros((_numnode, _numnode), dtype="float64")
  */
 
 /* Python wrapper */
@@ -2556,29 +2562,29 @@ static PyObject *__pyx_pw_10cyassembly_1fem_matrix(PyObject *__pyx_self, PyObjec
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_y)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("fem_matrix", 1, 5, 5, 1); __PYX_ERR(0, 8, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("fem_matrix", 1, 5, 5, 1); __PYX_ERR(0, 6, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  2:
         if (likely((values[2] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_numele)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("fem_matrix", 1, 5, 5, 2); __PYX_ERR(0, 8, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("fem_matrix", 1, 5, 5, 2); __PYX_ERR(0, 6, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  3:
         if (likely((values[3] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_numnode)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("fem_matrix", 1, 5, 5, 3); __PYX_ERR(0, 8, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("fem_matrix", 1, 5, 5, 3); __PYX_ERR(0, 6, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  4:
         if (likely((values[4] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_ien)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("fem_matrix", 1, 5, 5, 4); __PYX_ERR(0, 8, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("fem_matrix", 1, 5, 5, 4); __PYX_ERR(0, 6, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "fem_matrix") < 0)) __PYX_ERR(0, 8, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "fem_matrix") < 0)) __PYX_ERR(0, 6, __pyx_L3_error)
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 5) {
       goto __pyx_L5_argtuple_error;
@@ -2597,7 +2603,7 @@ static PyObject *__pyx_pw_10cyassembly_1fem_matrix(PyObject *__pyx_self, PyObjec
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("fem_matrix", 1, 5, 5, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 8, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("fem_matrix", 1, 5, 5, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 6, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("cyassembly.fem_matrix", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -2635,19 +2641,19 @@ static PyObject *__pyx_pf_10cyassembly_fem_matrix(CYTHON_UNUSED PyObject *__pyx_
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("fem_matrix", 0);
 
-  /* "cyassembly.pyx":9
+  /* "cyassembly.pyx":7
  * 
  * def fem_matrix(_x, _y, _numele, _numnode, _ien):
- *   k_global = np.empty((_numnode, _numnode), dtype="float64")             # <<<<<<<<<<<<<<
- *   m_global = np.empty((_numnode, _numnode), dtype="float64")
- *   gx_global = np.empty((_numnode, _numnode), dtype="float64")
+ *     k_global = np.zeros((_numnode, _numnode), dtype="float64")             # <<<<<<<<<<<<<<
+ *     m_global = np.zeros((_numnode, _numnode), dtype="float64")
+ *     gx_global = np.zeros((_numnode, _numnode), dtype="float64")
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 9, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 7, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_empty); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 9, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_zeros); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 7, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = PyTuple_New(2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 9, __pyx_L1_error)
+  __pyx_t_1 = PyTuple_New(2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 7, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_INCREF(__pyx_v__numnode);
   __Pyx_GIVEREF(__pyx_v__numnode);
@@ -2655,15 +2661,15 @@ static PyObject *__pyx_pf_10cyassembly_fem_matrix(CYTHON_UNUSED PyObject *__pyx_
   __Pyx_INCREF(__pyx_v__numnode);
   __Pyx_GIVEREF(__pyx_v__numnode);
   PyTuple_SET_ITEM(__pyx_t_1, 1, __pyx_v__numnode);
-  __pyx_t_3 = PyTuple_New(1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 9, __pyx_L1_error)
+  __pyx_t_3 = PyTuple_New(1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 7, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_GIVEREF(__pyx_t_1);
   PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_t_1);
   __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 9, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 7, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_dtype, __pyx_n_s_float64) < 0) __PYX_ERR(0, 9, __pyx_L1_error)
-  __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_3, __pyx_t_1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 9, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_dtype, __pyx_n_s_float64) < 0) __PYX_ERR(0, 7, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_3, __pyx_t_1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 7, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -2671,19 +2677,19 @@ static PyObject *__pyx_pf_10cyassembly_fem_matrix(CYTHON_UNUSED PyObject *__pyx_
   __pyx_v_k_global = __pyx_t_4;
   __pyx_t_4 = 0;
 
-  /* "cyassembly.pyx":10
+  /* "cyassembly.pyx":8
  * def fem_matrix(_x, _y, _numele, _numnode, _ien):
- *   k_global = np.empty((_numnode, _numnode), dtype="float64")
- *   m_global = np.empty((_numnode, _numnode), dtype="float64")             # <<<<<<<<<<<<<<
- *   gx_global = np.empty((_numnode, _numnode), dtype="float64")
- *   gy_global = np.empty((_numnode, _numnode), dtype="float64")
+ *     k_global = np.zeros((_numnode, _numnode), dtype="float64")
+ *     m_global = np.zeros((_numnode, _numnode), dtype="float64")             # <<<<<<<<<<<<<<
+ *     gx_global = np.zeros((_numnode, _numnode), dtype="float64")
+ *     gy_global = np.zeros((_numnode, _numnode), dtype="float64")
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 10, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_4, __pyx_n_s_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 8, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_empty); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 10, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_zeros); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 8, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_t_4 = PyTuple_New(2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 10, __pyx_L1_error)
+  __pyx_t_4 = PyTuple_New(2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 8, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_INCREF(__pyx_v__numnode);
   __Pyx_GIVEREF(__pyx_v__numnode);
@@ -2691,15 +2697,15 @@ static PyObject *__pyx_pf_10cyassembly_fem_matrix(CYTHON_UNUSED PyObject *__pyx_
   __Pyx_INCREF(__pyx_v__numnode);
   __Pyx_GIVEREF(__pyx_v__numnode);
   PyTuple_SET_ITEM(__pyx_t_4, 1, __pyx_v__numnode);
-  __pyx_t_3 = PyTuple_New(1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 10, __pyx_L1_error)
+  __pyx_t_3 = PyTuple_New(1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 8, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_GIVEREF(__pyx_t_4);
   PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_t_4);
   __pyx_t_4 = 0;
-  __pyx_t_4 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 10, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 8, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  if (PyDict_SetItem(__pyx_t_4, __pyx_n_s_dtype, __pyx_n_s_float64) < 0) __PYX_ERR(0, 10, __pyx_L1_error)
-  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_3, __pyx_t_4); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 10, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_4, __pyx_n_s_dtype, __pyx_n_s_float64) < 0) __PYX_ERR(0, 8, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_t_3, __pyx_t_4); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 8, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -2707,19 +2713,19 @@ static PyObject *__pyx_pf_10cyassembly_fem_matrix(CYTHON_UNUSED PyObject *__pyx_
   __pyx_v_m_global = __pyx_t_2;
   __pyx_t_2 = 0;
 
-  /* "cyassembly.pyx":11
- *   k_global = np.empty((_numnode, _numnode), dtype="float64")
- *   m_global = np.empty((_numnode, _numnode), dtype="float64")
- *   gx_global = np.empty((_numnode, _numnode), dtype="float64")             # <<<<<<<<<<<<<<
- *   gy_global = np.empty((_numnode, _numnode), dtype="float64")
+  /* "cyassembly.pyx":9
+ *     k_global = np.zeros((_numnode, _numnode), dtype="float64")
+ *     m_global = np.zeros((_numnode, _numnode), dtype="float64")
+ *     gx_global = np.zeros((_numnode, _numnode), dtype="float64")             # <<<<<<<<<<<<<<
+ *     gy_global = np.zeros((_numnode, _numnode), dtype="float64")
  * 
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_np); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 11, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_np); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 9, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_empty); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 11, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_zeros); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 9, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = PyTuple_New(2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 11, __pyx_L1_error)
+  __pyx_t_2 = PyTuple_New(2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 9, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_INCREF(__pyx_v__numnode);
   __Pyx_GIVEREF(__pyx_v__numnode);
@@ -2727,15 +2733,15 @@ static PyObject *__pyx_pf_10cyassembly_fem_matrix(CYTHON_UNUSED PyObject *__pyx_
   __Pyx_INCREF(__pyx_v__numnode);
   __Pyx_GIVEREF(__pyx_v__numnode);
   PyTuple_SET_ITEM(__pyx_t_2, 1, __pyx_v__numnode);
-  __pyx_t_3 = PyTuple_New(1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 11, __pyx_L1_error)
+  __pyx_t_3 = PyTuple_New(1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 9, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_GIVEREF(__pyx_t_2);
   PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_t_2);
   __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 11, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 9, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_dtype, __pyx_n_s_float64) < 0) __PYX_ERR(0, 11, __pyx_L1_error)
-  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_t_3, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 11, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_dtype, __pyx_n_s_float64) < 0) __PYX_ERR(0, 9, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_t_3, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 9, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -2743,19 +2749,19 @@ static PyObject *__pyx_pf_10cyassembly_fem_matrix(CYTHON_UNUSED PyObject *__pyx_
   __pyx_v_gx_global = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "cyassembly.pyx":12
- *   m_global = np.empty((_numnode, _numnode), dtype="float64")
- *   gx_global = np.empty((_numnode, _numnode), dtype="float64")
- *   gy_global = np.empty((_numnode, _numnode), dtype="float64")             # <<<<<<<<<<<<<<
+  /* "cyassembly.pyx":10
+ *     m_global = np.zeros((_numnode, _numnode), dtype="float64")
+ *     gx_global = np.zeros((_numnode, _numnode), dtype="float64")
+ *     gy_global = np.zeros((_numnode, _numnode), dtype="float64")             # <<<<<<<<<<<<<<
  * 
- *   _matrix(_x, _y, _numele, _numnode, _ien,
+ *     _matrix(_x, _y, _numele, _numnode, _ien,
  */
-  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 12, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 10, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_empty); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 12, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_zeros); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 10, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = PyTuple_New(2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 12, __pyx_L1_error)
+  __pyx_t_1 = PyTuple_New(2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 10, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_INCREF(__pyx_v__numnode);
   __Pyx_GIVEREF(__pyx_v__numnode);
@@ -2763,15 +2769,15 @@ static PyObject *__pyx_pf_10cyassembly_fem_matrix(CYTHON_UNUSED PyObject *__pyx_
   __Pyx_INCREF(__pyx_v__numnode);
   __Pyx_GIVEREF(__pyx_v__numnode);
   PyTuple_SET_ITEM(__pyx_t_1, 1, __pyx_v__numnode);
-  __pyx_t_3 = PyTuple_New(1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 12, __pyx_L1_error)
+  __pyx_t_3 = PyTuple_New(1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 10, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_GIVEREF(__pyx_t_1);
   PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_t_1);
   __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 12, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 10, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_dtype, __pyx_n_s_float64) < 0) __PYX_ERR(0, 12, __pyx_L1_error)
-  __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_3, __pyx_t_1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 12, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_1, __pyx_n_s_dtype, __pyx_n_s_float64) < 0) __PYX_ERR(0, 10, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_3, __pyx_t_1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 10, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -2779,43 +2785,43 @@ static PyObject *__pyx_pf_10cyassembly_fem_matrix(CYTHON_UNUSED PyObject *__pyx_
   __pyx_v_gy_global = __pyx_t_4;
   __pyx_t_4 = 0;
 
-  /* "cyassembly.pyx":14
- *   gy_global = np.empty((_numnode, _numnode), dtype="float64")
+  /* "cyassembly.pyx":12
+ *     gy_global = np.zeros((_numnode, _numnode), dtype="float64")
  * 
- *   _matrix(_x, _y, _numele, _numnode, _ien,             # <<<<<<<<<<<<<<
+ *     _matrix(_x, _y, _numele, _numnode, _ien,             # <<<<<<<<<<<<<<
  *           k_global, m_global,
  *           gx_global,  gy_global)
  */
-  __pyx_t_5 = __Pyx_PyObject_to_MemoryviewSlice_ds_double(__pyx_v__x, PyBUF_WRITABLE); if (unlikely(!__pyx_t_5.memview)) __PYX_ERR(0, 14, __pyx_L1_error)
-  __pyx_t_6 = __Pyx_PyObject_to_MemoryviewSlice_ds_double(__pyx_v__y, PyBUF_WRITABLE); if (unlikely(!__pyx_t_6.memview)) __PYX_ERR(0, 14, __pyx_L1_error)
-  __pyx_t_7 = __Pyx_PyInt_As_int(__pyx_v__numele); if (unlikely((__pyx_t_7 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 14, __pyx_L1_error)
-  __pyx_t_8 = __Pyx_PyInt_As_int(__pyx_v__numnode); if (unlikely((__pyx_t_8 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 14, __pyx_L1_error)
-  __pyx_t_9 = __Pyx_PyObject_to_MemoryviewSlice_dsds_int(__pyx_v__ien, PyBUF_WRITABLE); if (unlikely(!__pyx_t_9.memview)) __PYX_ERR(0, 14, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_to_MemoryviewSlice_ds_double(__pyx_v__x, PyBUF_WRITABLE); if (unlikely(!__pyx_t_5.memview)) __PYX_ERR(0, 12, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_PyObject_to_MemoryviewSlice_ds_double(__pyx_v__y, PyBUF_WRITABLE); if (unlikely(!__pyx_t_6.memview)) __PYX_ERR(0, 12, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_PyInt_As_int(__pyx_v__numele); if (unlikely((__pyx_t_7 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 12, __pyx_L1_error)
+  __pyx_t_8 = __Pyx_PyInt_As_int(__pyx_v__numnode); if (unlikely((__pyx_t_8 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 12, __pyx_L1_error)
+  __pyx_t_9 = __Pyx_PyObject_to_MemoryviewSlice_dsds_unsigned_long(__pyx_v__ien, PyBUF_WRITABLE); if (unlikely(!__pyx_t_9.memview)) __PYX_ERR(0, 12, __pyx_L1_error)
 
-  /* "cyassembly.pyx":15
+  /* "cyassembly.pyx":13
  * 
- *   _matrix(_x, _y, _numele, _numnode, _ien,
+ *     _matrix(_x, _y, _numele, _numnode, _ien,
  *           k_global, m_global,             # <<<<<<<<<<<<<<
  *           gx_global,  gy_global)
  * 
  */
-  __pyx_t_10 = __Pyx_PyObject_to_MemoryviewSlice_dsds_double(__pyx_v_k_global, PyBUF_WRITABLE); if (unlikely(!__pyx_t_10.memview)) __PYX_ERR(0, 15, __pyx_L1_error)
-  __pyx_t_11 = __Pyx_PyObject_to_MemoryviewSlice_dsds_double(__pyx_v_m_global, PyBUF_WRITABLE); if (unlikely(!__pyx_t_11.memview)) __PYX_ERR(0, 15, __pyx_L1_error)
+  __pyx_t_10 = __Pyx_PyObject_to_MemoryviewSlice_dsds_double(__pyx_v_k_global, PyBUF_WRITABLE); if (unlikely(!__pyx_t_10.memview)) __PYX_ERR(0, 13, __pyx_L1_error)
+  __pyx_t_11 = __Pyx_PyObject_to_MemoryviewSlice_dsds_double(__pyx_v_m_global, PyBUF_WRITABLE); if (unlikely(!__pyx_t_11.memview)) __PYX_ERR(0, 13, __pyx_L1_error)
 
-  /* "cyassembly.pyx":16
- *   _matrix(_x, _y, _numele, _numnode, _ien,
+  /* "cyassembly.pyx":14
+ *     _matrix(_x, _y, _numele, _numnode, _ien,
  *           k_global, m_global,
  *           gx_global,  gy_global)             # <<<<<<<<<<<<<<
  * 
- *   return  k_global, m_global, gx_global, gy_global
+ *     return  k_global, m_global, gx_global, gy_global
  */
-  __pyx_t_12 = __Pyx_PyObject_to_MemoryviewSlice_dsds_double(__pyx_v_gx_global, PyBUF_WRITABLE); if (unlikely(!__pyx_t_12.memview)) __PYX_ERR(0, 16, __pyx_L1_error)
-  __pyx_t_13 = __Pyx_PyObject_to_MemoryviewSlice_dsds_double(__pyx_v_gy_global, PyBUF_WRITABLE); if (unlikely(!__pyx_t_13.memview)) __PYX_ERR(0, 16, __pyx_L1_error)
+  __pyx_t_12 = __Pyx_PyObject_to_MemoryviewSlice_dsds_double(__pyx_v_gx_global, PyBUF_WRITABLE); if (unlikely(!__pyx_t_12.memview)) __PYX_ERR(0, 14, __pyx_L1_error)
+  __pyx_t_13 = __Pyx_PyObject_to_MemoryviewSlice_dsds_double(__pyx_v_gy_global, PyBUF_WRITABLE); if (unlikely(!__pyx_t_13.memview)) __PYX_ERR(0, 14, __pyx_L1_error)
 
-  /* "cyassembly.pyx":14
- *   gy_global = np.empty((_numnode, _numnode), dtype="float64")
+  /* "cyassembly.pyx":12
+ *     gy_global = np.zeros((_numnode, _numnode), dtype="float64")
  * 
- *   _matrix(_x, _y, _numele, _numnode, _ien,             # <<<<<<<<<<<<<<
+ *     _matrix(_x, _y, _numele, _numnode, _ien,             # <<<<<<<<<<<<<<
  *           k_global, m_global,
  *           gx_global,  gy_global)
  */
@@ -2842,15 +2848,15 @@ static PyObject *__pyx_pf_10cyassembly_fem_matrix(CYTHON_UNUSED PyObject *__pyx_
   __pyx_t_13.memview = NULL;
   __pyx_t_13.data = NULL;
 
-  /* "cyassembly.pyx":18
+  /* "cyassembly.pyx":16
  *           gx_global,  gy_global)
  * 
- *   return  k_global, m_global, gx_global, gy_global             # <<<<<<<<<<<<<<
+ *     return  k_global, m_global, gx_global, gy_global             # <<<<<<<<<<<<<<
  * 
  * 
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_4 = PyTuple_New(4); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 18, __pyx_L1_error)
+  __pyx_t_4 = PyTuple_New(4); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 16, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_INCREF(__pyx_v_k_global);
   __Pyx_GIVEREF(__pyx_v_k_global);
@@ -2868,12 +2874,12 @@ static PyObject *__pyx_pf_10cyassembly_fem_matrix(CYTHON_UNUSED PyObject *__pyx_
   __pyx_t_4 = 0;
   goto __pyx_L0;
 
-  /* "cyassembly.pyx":8
+  /* "cyassembly.pyx":6
  * cimport numpy as np
  * 
  * def fem_matrix(_x, _y, _numele, _numnode, _ien):             # <<<<<<<<<<<<<<
- *   k_global = np.empty((_numnode, _numnode), dtype="float64")
- *   m_global = np.empty((_numnode, _numnode), dtype="float64")
+ *     k_global = np.zeros((_numnode, _numnode), dtype="float64")
+ *     m_global = np.zeros((_numnode, _numnode), dtype="float64")
  */
 
   /* function exit code */
@@ -2902,23 +2908,22 @@ static PyObject *__pyx_pf_10cyassembly_fem_matrix(CYTHON_UNUSED PyObject *__pyx_
 }
 
 /* "cyassembly.pyx":22
- * 
- * 
+ * @cython.boundscheck(False)
+ * @cython.wraparound(False)
  * cdef void _matrix(double[:] _x, double[:] _y, int _numele, int _numnode,             # <<<<<<<<<<<<<<
- *         int[:,:] _ien,
+ *         unsigned long[:,:] _ien,
  *         double[:,:] k_global, double[:,:] m_global,
  */
 
 static void __pyx_f_10cyassembly__matrix(__Pyx_memviewslice __pyx_v__x, __Pyx_memviewslice __pyx_v__y, int __pyx_v__numele, CYTHON_UNUSED int __pyx_v__numnode, __Pyx_memviewslice __pyx_v__ien, __Pyx_memviewslice __pyx_v_k_global, __Pyx_memviewslice __pyx_v_m_global, __Pyx_memviewslice __pyx_v_gx_global, __Pyx_memviewslice __pyx_v_gy_global) {
-  int __pyx_v_elem;
-  int __pyx_v_i;
-  int __pyx_v_j;
+  unsigned long __pyx_v_elem;
+  unsigned long __pyx_v_i;
+  unsigned long __pyx_v_j;
+  unsigned long __pyx_v_i_global;
+  unsigned long __pyx_v_j_global;
   int __pyx_v_i_local;
   int __pyx_v_j_local;
-  int __pyx_v_i_global;
-  int __pyx_v_j_global;
   double __pyx_v_Area;
-  double __pyx_v_tmp;
   double __pyx_v_a[3];
   double __pyx_v_b[3];
   double __pyx_v_c[3];
@@ -2928,6 +2933,7 @@ static void __pyx_f_10cyassembly__matrix(__Pyx_memviewslice __pyx_v__x, __Pyx_me
   double __pyx_v_gx_local[3][3];
   double __pyx_v_gy_local[3][3];
   double __pyx_v_m_local[3][3];
+  PyObject *__pyx_v_idx = NULL;
   __Pyx_RefNannyDeclarations
   double __pyx_t_1[3];
   double __pyx_t_2[3];
@@ -2935,28 +2941,43 @@ static void __pyx_f_10cyassembly__matrix(__Pyx_memviewslice __pyx_v__x, __Pyx_me
   double __pyx_t_4[3][3];
   int __pyx_t_5;
   int __pyx_t_6;
-  int __pyx_t_7;
-  int __pyx_t_8;
-  Py_ssize_t __pyx_t_9;
-  Py_ssize_t __pyx_t_10;
-  Py_ssize_t __pyx_t_11;
-  int __pyx_t_12;
+  unsigned long __pyx_t_7;
+  unsigned long __pyx_t_8;
+  size_t __pyx_t_9;
+  size_t __pyx_t_10;
+  PyObject *__pyx_t_11 = NULL;
+  Py_ssize_t __pyx_t_12;
   Py_ssize_t __pyx_t_13;
-  Py_ssize_t __pyx_t_14;
-  Py_ssize_t __pyx_t_15;
-  Py_ssize_t __pyx_t_16;
-  Py_ssize_t __pyx_t_17;
+  unsigned long __pyx_t_14;
+  int __pyx_t_15;
+  int __pyx_t_16;
+  size_t __pyx_t_17;
+  size_t __pyx_t_18;
+  size_t __pyx_t_19;
+  size_t __pyx_t_20;
+  size_t __pyx_t_21;
+  size_t __pyx_t_22;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("_matrix", 0);
 
-  /* "cyassembly.pyx":32
- *     double[3] a, b, c, xx, yy
- *     double[3][3] k_local, gx_local, gy_local
- *     double[3][3] m_local = [[2, 1, 1], [1, 2, 1], [1, 1, 2]]             # <<<<<<<<<<<<<<
+  /* "cyassembly.pyx":29
+ *     cdef:
+ *         unsigned long elem, i, j, i_global, j_global
+ *         int i_local = 0, j_local = 0             # <<<<<<<<<<<<<<
+ *         double Area
+ *         double[3] a, b, c, xx, yy
+ */
+  __pyx_v_i_local = 0;
+  __pyx_v_j_local = 0;
+
+  /* "cyassembly.pyx":33
+ *         double[3] a, b, c, xx, yy
+ *         double[3][3] k_local, gx_local, gy_local
+ *         double[3][3] m_local = [[2, 1, 1], [1, 2, 1], [1, 1, 2]]             # <<<<<<<<<<<<<<
  * 
- *   for elem in range(_numele):
+ *     for elem in range(_numele):
  */
   __pyx_t_1[0] = 2.0;
   __pyx_t_1[1] = 1.0;
@@ -2972,322 +2993,332 @@ static void __pyx_f_10cyassembly__matrix(__Pyx_memviewslice __pyx_v__x, __Pyx_me
   memcpy(&(__pyx_t_4[2]), __pyx_t_3, sizeof(__pyx_t_4[0]));
   memcpy(&(__pyx_v_m_local[0]), __pyx_t_4, sizeof(__pyx_v_m_local[0]) * (3));
 
-  /* "cyassembly.pyx":34
- *     double[3][3] m_local = [[2, 1, 1], [1, 2, 1], [1, 1, 2]]
+  /* "cyassembly.pyx":35
+ *         double[3][3] m_local = [[2, 1, 1], [1, 2, 1], [1, 1, 2]]
  * 
- *   for elem in range(_numele):             # <<<<<<<<<<<<<<
- *     for i in range(3):
- *       xx[i] = _x[_ien[elem, i]]
+ *     for elem in range(_numele):             # <<<<<<<<<<<<<<
+ *         i = 0
+ *         for i in range(3):
  */
   __pyx_t_5 = __pyx_v__numele;
   __pyx_t_6 = __pyx_t_5;
   for (__pyx_t_7 = 0; __pyx_t_7 < __pyx_t_6; __pyx_t_7+=1) {
     __pyx_v_elem = __pyx_t_7;
 
-    /* "cyassembly.pyx":35
+    /* "cyassembly.pyx":36
  * 
- *   for elem in range(_numele):
- *     for i in range(3):             # <<<<<<<<<<<<<<
- *       xx[i] = _x[_ien[elem, i]]
- *       yy[i] = _y[_ien[elem, i]]
+ *     for elem in range(_numele):
+ *         i = 0             # <<<<<<<<<<<<<<
+ *         for i in range(3):
+ *             idx = _ien[elem][i]
+ */
+    __pyx_v_i = 0;
+
+    /* "cyassembly.pyx":37
+ *     for elem in range(_numele):
+ *         i = 0
+ *         for i in range(3):             # <<<<<<<<<<<<<<
+ *             idx = _ien[elem][i]
+ *             xx[i] = _x[idx]
  */
     for (__pyx_t_8 = 0; __pyx_t_8 < 3; __pyx_t_8+=1) {
       __pyx_v_i = __pyx_t_8;
 
-      /* "cyassembly.pyx":36
- *   for elem in range(_numele):
- *     for i in range(3):
- *       xx[i] = _x[_ien[elem, i]]             # <<<<<<<<<<<<<<
- *       yy[i] = _y[_ien[elem, i]]
- * 
+      /* "cyassembly.pyx":38
+ *         i = 0
+ *         for i in range(3):
+ *             idx = _ien[elem][i]             # <<<<<<<<<<<<<<
+ *             xx[i] = _x[idx]
+ *             yy[i] = _y[idx]
  */
       __pyx_t_9 = __pyx_v_elem;
       __pyx_t_10 = __pyx_v_i;
-      if (__pyx_t_9 < 0) __pyx_t_9 += __pyx_v__ien.shape[0];
-      if (__pyx_t_10 < 0) __pyx_t_10 += __pyx_v__ien.shape[1];
-      __pyx_t_11 = (*((int *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v__ien.data + __pyx_t_9 * __pyx_v__ien.strides[0]) ) + __pyx_t_10 * __pyx_v__ien.strides[1]) )));
-      if (__pyx_t_11 < 0) __pyx_t_11 += __pyx_v__x.shape[0];
-      (__pyx_v_xx[__pyx_v_i]) = (*((double *) ( /* dim=0 */ (__pyx_v__x.data + __pyx_t_11 * __pyx_v__x.strides[0]) )));
+      __pyx_t_11 = __Pyx_PyInt_From_unsigned_long((*((unsigned long *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v__ien.data + __pyx_t_9 * __pyx_v__ien.strides[0]) ) + __pyx_t_10 * __pyx_v__ien.strides[1]) )))); if (unlikely(!__pyx_t_11)) __PYX_ERR(0, 38, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_11);
+      __Pyx_XDECREF_SET(__pyx_v_idx, __pyx_t_11);
+      __pyx_t_11 = 0;
 
-      /* "cyassembly.pyx":37
- *     for i in range(3):
- *       xx[i] = _x[_ien[elem, i]]
- *       yy[i] = _y[_ien[elem, i]]             # <<<<<<<<<<<<<<
+      /* "cyassembly.pyx":39
+ *         for i in range(3):
+ *             idx = _ien[elem][i]
+ *             xx[i] = _x[idx]             # <<<<<<<<<<<<<<
+ *             yy[i] = _y[idx]
  * 
- *     a[0] = xx[0] * yy[1] - xx[1] * yy[0]
  */
-      __pyx_t_10 = __pyx_v_elem;
-      __pyx_t_9 = __pyx_v_i;
-      if (__pyx_t_10 < 0) __pyx_t_10 += __pyx_v__ien.shape[0];
-      if (__pyx_t_9 < 0) __pyx_t_9 += __pyx_v__ien.shape[1];
-      __pyx_t_11 = (*((int *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v__ien.data + __pyx_t_10 * __pyx_v__ien.strides[0]) ) + __pyx_t_9 * __pyx_v__ien.strides[1]) )));
-      if (__pyx_t_11 < 0) __pyx_t_11 += __pyx_v__y.shape[0];
-      (__pyx_v_yy[__pyx_v_i]) = (*((double *) ( /* dim=0 */ (__pyx_v__y.data + __pyx_t_11 * __pyx_v__y.strides[0]) )));
+      __pyx_t_12 = __Pyx_PyIndex_AsSsize_t(__pyx_v_idx); if (unlikely((__pyx_t_12 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 39, __pyx_L1_error)
+      __pyx_t_13 = __pyx_t_12;
+      (__pyx_v_xx[__pyx_v_i]) = (*((double *) ( /* dim=0 */ (__pyx_v__x.data + __pyx_t_13 * __pyx_v__x.strides[0]) )));
+
+      /* "cyassembly.pyx":40
+ *             idx = _ien[elem][i]
+ *             xx[i] = _x[idx]
+ *             yy[i] = _y[idx]             # <<<<<<<<<<<<<<
+ * 
+ *         a[0] = xx[0] * yy[1] - xx[1] * yy[0]
+ */
+      __pyx_t_12 = __Pyx_PyIndex_AsSsize_t(__pyx_v_idx); if (unlikely((__pyx_t_12 == (Py_ssize_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 40, __pyx_L1_error)
+      __pyx_t_13 = __pyx_t_12;
+      (__pyx_v_yy[__pyx_v_i]) = (*((double *) ( /* dim=0 */ (__pyx_v__y.data + __pyx_t_13 * __pyx_v__y.strides[0]) )));
     }
 
-    /* "cyassembly.pyx":39
- *       yy[i] = _y[_ien[elem, i]]
+    /* "cyassembly.pyx":42
+ *             yy[i] = _y[idx]
  * 
- *     a[0] = xx[0] * yy[1] - xx[1] * yy[0]             # <<<<<<<<<<<<<<
- *     a[1] = xx[2] * yy[0] - xx[0] * yy[2]
- *     a[2] = xx[1] * yy[2] - xx[2] * yy[1]
+ *         a[0] = xx[0] * yy[1] - xx[1] * yy[0]             # <<<<<<<<<<<<<<
+ *         a[1] = xx[2] * yy[0] - xx[0] * yy[2]
+ *         a[2] = xx[1] * yy[2] - xx[2] * yy[1]
  */
     (__pyx_v_a[0]) = (((__pyx_v_xx[0]) * (__pyx_v_yy[1])) - ((__pyx_v_xx[1]) * (__pyx_v_yy[0])));
 
-    /* "cyassembly.pyx":40
+    /* "cyassembly.pyx":43
  * 
- *     a[0] = xx[0] * yy[1] - xx[1] * yy[0]
- *     a[1] = xx[2] * yy[0] - xx[0] * yy[2]             # <<<<<<<<<<<<<<
- *     a[2] = xx[1] * yy[2] - xx[2] * yy[1]
- *     Area = (a[0] + a[1] + a[2]) / 2.
+ *         a[0] = xx[0] * yy[1] - xx[1] * yy[0]
+ *         a[1] = xx[2] * yy[0] - xx[0] * yy[2]             # <<<<<<<<<<<<<<
+ *         a[2] = xx[1] * yy[2] - xx[2] * yy[1]
+ *         Area = (a[0] + a[1] + a[2]) / 2.
  */
     (__pyx_v_a[1]) = (((__pyx_v_xx[2]) * (__pyx_v_yy[0])) - ((__pyx_v_xx[0]) * (__pyx_v_yy[2])));
 
-    /* "cyassembly.pyx":41
- *     a[0] = xx[0] * yy[1] - xx[1] * yy[0]
- *     a[1] = xx[2] * yy[0] - xx[0] * yy[2]
- *     a[2] = xx[1] * yy[2] - xx[2] * yy[1]             # <<<<<<<<<<<<<<
- *     Area = (a[0] + a[1] + a[2]) / 2.
- *     tmp = (1. / Area) * 0.25
+    /* "cyassembly.pyx":44
+ *         a[0] = xx[0] * yy[1] - xx[1] * yy[0]
+ *         a[1] = xx[2] * yy[0] - xx[0] * yy[2]
+ *         a[2] = xx[1] * yy[2] - xx[2] * yy[1]             # <<<<<<<<<<<<<<
+ *         Area = (a[0] + a[1] + a[2]) / 2.
+ * 
  */
     (__pyx_v_a[2]) = (((__pyx_v_xx[1]) * (__pyx_v_yy[2])) - ((__pyx_v_xx[2]) * (__pyx_v_yy[1])));
 
-    /* "cyassembly.pyx":42
- *     a[1] = xx[2] * yy[0] - xx[0] * yy[2]
- *     a[2] = xx[1] * yy[2] - xx[2] * yy[1]
- *     Area = (a[0] + a[1] + a[2]) / 2.             # <<<<<<<<<<<<<<
- *     tmp = (1. / Area) * 0.25
+    /* "cyassembly.pyx":45
+ *         a[1] = xx[2] * yy[0] - xx[0] * yy[2]
+ *         a[2] = xx[1] * yy[2] - xx[2] * yy[1]
+ *         Area = (a[0] + a[1] + a[2]) / 2.             # <<<<<<<<<<<<<<
  * 
+ *         b[0] = yy[1] - yy[2]
  */
     __pyx_v_Area = ((((__pyx_v_a[0]) + (__pyx_v_a[1])) + (__pyx_v_a[2])) / 2.);
 
-    /* "cyassembly.pyx":43
- *     a[2] = xx[1] * yy[2] - xx[2] * yy[1]
- *     Area = (a[0] + a[1] + a[2]) / 2.
- *     tmp = (1. / Area) * 0.25             # <<<<<<<<<<<<<<
+    /* "cyassembly.pyx":47
+ *         Area = (a[0] + a[1] + a[2]) / 2.
  * 
- *     b[0] = yy[1] - yy[2]
- */
-    if (unlikely(__pyx_v_Area == 0)) {
-      PyErr_SetString(PyExc_ZeroDivisionError, "float division");
-      __PYX_ERR(0, 43, __pyx_L1_error)
-    }
-    __pyx_v_tmp = ((1. / __pyx_v_Area) * 0.25);
-
-    /* "cyassembly.pyx":45
- *     tmp = (1. / Area) * 0.25
- * 
- *     b[0] = yy[1] - yy[2]             # <<<<<<<<<<<<<<
- *     b[1] = yy[2] - yy[0]
- *     b[2] = yy[0] - yy[1]
+ *         b[0] = yy[1] - yy[2]             # <<<<<<<<<<<<<<
+ *         b[1] = yy[2] - yy[0]
+ *         b[2] = yy[0] - yy[1]
  */
     (__pyx_v_b[0]) = ((__pyx_v_yy[1]) - (__pyx_v_yy[2]));
 
-    /* "cyassembly.pyx":46
+    /* "cyassembly.pyx":48
  * 
- *     b[0] = yy[1] - yy[2]
- *     b[1] = yy[2] - yy[0]             # <<<<<<<<<<<<<<
- *     b[2] = yy[0] - yy[1]
- *     c[0] = xx[2] - xx[1]
+ *         b[0] = yy[1] - yy[2]
+ *         b[1] = yy[2] - yy[0]             # <<<<<<<<<<<<<<
+ *         b[2] = yy[0] - yy[1]
+ *         c[0] = xx[2] - xx[1]
  */
     (__pyx_v_b[1]) = ((__pyx_v_yy[2]) - (__pyx_v_yy[0]));
 
-    /* "cyassembly.pyx":47
- *     b[0] = yy[1] - yy[2]
- *     b[1] = yy[2] - yy[0]
- *     b[2] = yy[0] - yy[1]             # <<<<<<<<<<<<<<
- *     c[0] = xx[2] - xx[1]
- *     c[1] = xx[0] - xx[2]
+    /* "cyassembly.pyx":49
+ *         b[0] = yy[1] - yy[2]
+ *         b[1] = yy[2] - yy[0]
+ *         b[2] = yy[0] - yy[1]             # <<<<<<<<<<<<<<
+ *         c[0] = xx[2] - xx[1]
+ *         c[1] = xx[0] - xx[2]
  */
     (__pyx_v_b[2]) = ((__pyx_v_yy[0]) - (__pyx_v_yy[1]));
 
-    /* "cyassembly.pyx":48
- *     b[1] = yy[2] - yy[0]
- *     b[2] = yy[0] - yy[1]
- *     c[0] = xx[2] - xx[1]             # <<<<<<<<<<<<<<
- *     c[1] = xx[0] - xx[2]
- *     c[2] = xx[1] - xx[0]
+    /* "cyassembly.pyx":50
+ *         b[1] = yy[2] - yy[0]
+ *         b[2] = yy[0] - yy[1]
+ *         c[0] = xx[2] - xx[1]             # <<<<<<<<<<<<<<
+ *         c[1] = xx[0] - xx[2]
+ *         c[2] = xx[1] - xx[0]
  */
     (__pyx_v_c[0]) = ((__pyx_v_xx[2]) - (__pyx_v_xx[1]));
 
-    /* "cyassembly.pyx":49
- *     b[2] = yy[0] - yy[1]
- *     c[0] = xx[2] - xx[1]
- *     c[1] = xx[0] - xx[2]             # <<<<<<<<<<<<<<
- *     c[2] = xx[1] - xx[0]
+    /* "cyassembly.pyx":51
+ *         b[2] = yy[0] - yy[1]
+ *         c[0] = xx[2] - xx[1]
+ *         c[1] = xx[0] - xx[2]             # <<<<<<<<<<<<<<
+ *         c[2] = xx[1] - xx[0]
  * 
  */
     (__pyx_v_c[1]) = ((__pyx_v_xx[0]) - (__pyx_v_xx[2]));
 
-    /* "cyassembly.pyx":50
- *     c[0] = xx[2] - xx[1]
- *     c[1] = xx[0] - xx[2]
- *     c[2] = xx[1] - xx[0]             # <<<<<<<<<<<<<<
+    /* "cyassembly.pyx":52
+ *         c[0] = xx[2] - xx[1]
+ *         c[1] = xx[0] - xx[2]
+ *         c[2] = xx[1] - xx[0]             # <<<<<<<<<<<<<<
  * 
- *     for i in range(3):
+ *         i = 0
  */
     (__pyx_v_c[2]) = ((__pyx_v_xx[1]) - (__pyx_v_xx[0]));
 
-    /* "cyassembly.pyx":52
- *     c[2] = xx[1] - xx[0]
+    /* "cyassembly.pyx":54
+ *         c[2] = xx[1] - xx[0]
  * 
- *     for i in range(3):             # <<<<<<<<<<<<<<
- *       for j in range(3):
- *         k_local[i][j] = (b[i] * b[j] + c[i] * c[j]) *tmp
+ *         i = 0             # <<<<<<<<<<<<<<
+ *         for i in range(3):
+ *             j = 0
+ */
+    __pyx_v_i = 0;
+
+    /* "cyassembly.pyx":55
+ * 
+ *         i = 0
+ *         for i in range(3):             # <<<<<<<<<<<<<<
+ *             j = 0
+ *             for j in range(3):
  */
     for (__pyx_t_8 = 0; __pyx_t_8 < 3; __pyx_t_8+=1) {
       __pyx_v_i = __pyx_t_8;
 
-      /* "cyassembly.pyx":53
- * 
- *     for i in range(3):
- *       for j in range(3):             # <<<<<<<<<<<<<<
- *         k_local[i][j] = (b[i] * b[j] + c[i] * c[j]) *tmp
- *         gx_local[i][j] = b[j] * (1/6.)
+      /* "cyassembly.pyx":56
+ *         i = 0
+ *         for i in range(3):
+ *             j = 0             # <<<<<<<<<<<<<<
+ *             for j in range(3):
+ *                 k_local[i][j] = (b[i] * b[j] + c[i] * c[j]) / (4 * Area)
  */
-      for (__pyx_t_12 = 0; __pyx_t_12 < 3; __pyx_t_12+=1) {
-        __pyx_v_j = __pyx_t_12;
+      __pyx_v_j = 0;
 
-        /* "cyassembly.pyx":54
- *     for i in range(3):
- *       for j in range(3):
- *         k_local[i][j] = (b[i] * b[j] + c[i] * c[j]) *tmp             # <<<<<<<<<<<<<<
- *         gx_local[i][j] = b[j] * (1/6.)
- *         gy_local[i][j] = c[j] * (1/6.)
+      /* "cyassembly.pyx":57
+ *         for i in range(3):
+ *             j = 0
+ *             for j in range(3):             # <<<<<<<<<<<<<<
+ *                 k_local[i][j] = (b[i] * b[j] + c[i] * c[j]) / (4 * Area)
+ *                 gx_local[i][j] = b[j] * (1/6.)
  */
-        ((__pyx_v_k_local[__pyx_v_i])[__pyx_v_j]) = ((((__pyx_v_b[__pyx_v_i]) * (__pyx_v_b[__pyx_v_j])) + ((__pyx_v_c[__pyx_v_i]) * (__pyx_v_c[__pyx_v_j]))) * __pyx_v_tmp);
+      for (__pyx_t_14 = 0; __pyx_t_14 < 3; __pyx_t_14+=1) {
+        __pyx_v_j = __pyx_t_14;
 
-        /* "cyassembly.pyx":55
- *       for j in range(3):
- *         k_local[i][j] = (b[i] * b[j] + c[i] * c[j]) *tmp
- *         gx_local[i][j] = b[j] * (1/6.)             # <<<<<<<<<<<<<<
- *         gy_local[i][j] = c[j] * (1/6.)
+        /* "cyassembly.pyx":58
+ *             j = 0
+ *             for j in range(3):
+ *                 k_local[i][j] = (b[i] * b[j] + c[i] * c[j]) / (4 * Area)             # <<<<<<<<<<<<<<
+ *                 gx_local[i][j] = b[j] * (1/6.)
+ *                 gy_local[i][j] = c[j] * (1/6.)
+ */
+        ((__pyx_v_k_local[__pyx_v_i])[__pyx_v_j]) = ((((__pyx_v_b[__pyx_v_i]) * (__pyx_v_b[__pyx_v_j])) + ((__pyx_v_c[__pyx_v_i]) * (__pyx_v_c[__pyx_v_j]))) / (4.0 * __pyx_v_Area));
+
+        /* "cyassembly.pyx":59
+ *             for j in range(3):
+ *                 k_local[i][j] = (b[i] * b[j] + c[i] * c[j]) / (4 * Area)
+ *                 gx_local[i][j] = b[j] * (1/6.)             # <<<<<<<<<<<<<<
+ *                 gy_local[i][j] = c[j] * (1/6.)
  * 
  */
         ((__pyx_v_gx_local[__pyx_v_i])[__pyx_v_j]) = ((__pyx_v_b[__pyx_v_j]) * (1.0 / 6.));
 
-        /* "cyassembly.pyx":56
- *         k_local[i][j] = (b[i] * b[j] + c[i] * c[j]) *tmp
- *         gx_local[i][j] = b[j] * (1/6.)
- *         gy_local[i][j] = c[j] * (1/6.)             # <<<<<<<<<<<<<<
+        /* "cyassembly.pyx":60
+ *                 k_local[i][j] = (b[i] * b[j] + c[i] * c[j]) / (4 * Area)
+ *                 gx_local[i][j] = b[j] * (1/6.)
+ *                 gy_local[i][j] = c[j] * (1/6.)             # <<<<<<<<<<<<<<
  * 
- *     for i_local in range(3):
+ *         for i_local in range(3):
  */
         ((__pyx_v_gy_local[__pyx_v_i])[__pyx_v_j]) = ((__pyx_v_c[__pyx_v_j]) * (1.0 / 6.));
       }
     }
 
-    /* "cyassembly.pyx":58
- *         gy_local[i][j] = c[j] * (1/6.)
+    /* "cyassembly.pyx":62
+ *                 gy_local[i][j] = c[j] * (1/6.)
  * 
- *     for i_local in range(3):             # <<<<<<<<<<<<<<
- *       i_global = _ien[elem, i_local]
- *       for j_local in range(3):
+ *         for i_local in range(3):             # <<<<<<<<<<<<<<
+ *             i_global = _ien[elem][i_local]
+ *             for j_local in range(3):
  */
-    for (__pyx_t_8 = 0; __pyx_t_8 < 3; __pyx_t_8+=1) {
-      __pyx_v_i_local = __pyx_t_8;
+    for (__pyx_t_15 = 0; __pyx_t_15 < 3; __pyx_t_15+=1) {
+      __pyx_v_i_local = __pyx_t_15;
 
-      /* "cyassembly.pyx":59
+      /* "cyassembly.pyx":63
  * 
- *     for i_local in range(3):
- *       i_global = _ien[elem, i_local]             # <<<<<<<<<<<<<<
- *       for j_local in range(3):
- *         j_global = _ien[elem, j_local]
+ *         for i_local in range(3):
+ *             i_global = _ien[elem][i_local]             # <<<<<<<<<<<<<<
+ *             for j_local in range(3):
+ *                 j_global = _ien[elem, j_local]
  */
-      __pyx_t_9 = __pyx_v_elem;
-      __pyx_t_10 = __pyx_v_i_local;
-      if (__pyx_t_9 < 0) __pyx_t_9 += __pyx_v__ien.shape[0];
-      if (__pyx_t_10 < 0) __pyx_t_10 += __pyx_v__ien.shape[1];
-      __pyx_v_i_global = (*((int *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v__ien.data + __pyx_t_9 * __pyx_v__ien.strides[0]) ) + __pyx_t_10 * __pyx_v__ien.strides[1]) )));
+      __pyx_t_10 = __pyx_v_elem;
+      __pyx_t_13 = __pyx_v_i_local;
+      __pyx_v_i_global = (*((unsigned long *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v__ien.data + __pyx_t_10 * __pyx_v__ien.strides[0]) ) + __pyx_t_13 * __pyx_v__ien.strides[1]) )));
 
-      /* "cyassembly.pyx":60
- *     for i_local in range(3):
- *       i_global = _ien[elem, i_local]
- *       for j_local in range(3):             # <<<<<<<<<<<<<<
- *         j_global = _ien[elem, j_local]
- *         k_global[i_global, j_global] += k_local[i_local][j_local]
+      /* "cyassembly.pyx":64
+ *         for i_local in range(3):
+ *             i_global = _ien[elem][i_local]
+ *             for j_local in range(3):             # <<<<<<<<<<<<<<
+ *                 j_global = _ien[elem, j_local]
+ *                 k_global[i_global][j_global] += k_local[i_local][j_local]
  */
-      for (__pyx_t_12 = 0; __pyx_t_12 < 3; __pyx_t_12+=1) {
-        __pyx_v_j_local = __pyx_t_12;
-
-        /* "cyassembly.pyx":61
- *       i_global = _ien[elem, i_local]
- *       for j_local in range(3):
- *         j_global = _ien[elem, j_local]             # <<<<<<<<<<<<<<
- *         k_global[i_global, j_global] += k_local[i_local][j_local]
- *         m_global[i_global, j_global] += m_local[i_local][j_local] \
- */
-        __pyx_t_10 = __pyx_v_elem;
-        __pyx_t_9 = __pyx_v_j_local;
-        if (__pyx_t_10 < 0) __pyx_t_10 += __pyx_v__ien.shape[0];
-        if (__pyx_t_9 < 0) __pyx_t_9 += __pyx_v__ien.shape[1];
-        __pyx_v_j_global = (*((int *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v__ien.data + __pyx_t_10 * __pyx_v__ien.strides[0]) ) + __pyx_t_9 * __pyx_v__ien.strides[1]) )));
-
-        /* "cyassembly.pyx":62
- *       for j_local in range(3):
- *         j_global = _ien[elem, j_local]
- *         k_global[i_global, j_global] += k_local[i_local][j_local]             # <<<<<<<<<<<<<<
- *         m_global[i_global, j_global] += m_local[i_local][j_local] \
- *                                         * (Area/12.)
- */
-        __pyx_t_9 = __pyx_v_i_global;
-        __pyx_t_10 = __pyx_v_j_global;
-        if (__pyx_t_9 < 0) __pyx_t_9 += __pyx_v_k_global.shape[0];
-        if (__pyx_t_10 < 0) __pyx_t_10 += __pyx_v_k_global.shape[1];
-        *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_k_global.data + __pyx_t_9 * __pyx_v_k_global.strides[0]) ) + __pyx_t_10 * __pyx_v_k_global.strides[1]) )) += ((__pyx_v_k_local[__pyx_v_i_local])[__pyx_v_j_local]);
-
-        /* "cyassembly.pyx":63
- *         j_global = _ien[elem, j_local]
- *         k_global[i_global, j_global] += k_local[i_local][j_local]
- *         m_global[i_global, j_global] += m_local[i_local][j_local] \             # <<<<<<<<<<<<<<
- *                                         * (Area/12.)
- *         gx_global[i_global, j_global] += gx_local[i_local][j_local]
- */
-        __pyx_t_11 = __pyx_v_i_global;
-        __pyx_t_13 = __pyx_v_j_global;
-        if (__pyx_t_11 < 0) __pyx_t_11 += __pyx_v_m_global.shape[0];
-        if (__pyx_t_13 < 0) __pyx_t_13 += __pyx_v_m_global.shape[1];
-        *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_m_global.data + __pyx_t_11 * __pyx_v_m_global.strides[0]) ) + __pyx_t_13 * __pyx_v_m_global.strides[1]) )) += (((__pyx_v_m_local[__pyx_v_i_local])[__pyx_v_j_local]) * (__pyx_v_Area / 12.));
+      for (__pyx_t_16 = 0; __pyx_t_16 < 3; __pyx_t_16+=1) {
+        __pyx_v_j_local = __pyx_t_16;
 
         /* "cyassembly.pyx":65
- *         m_global[i_global, j_global] += m_local[i_local][j_local] \
- *                                         * (Area/12.)
- *         gx_global[i_global, j_global] += gx_local[i_local][j_local]             # <<<<<<<<<<<<<<
- *         gy_global[i_global, j_global] += gy_local[i_local][j_local]
+ *             i_global = _ien[elem][i_local]
+ *             for j_local in range(3):
+ *                 j_global = _ien[elem, j_local]             # <<<<<<<<<<<<<<
+ *                 k_global[i_global][j_global] += k_local[i_local][j_local]
+ *                 m_global[i_global][j_global] += m_local[i_local][j_local] *\
  */
-        __pyx_t_14 = __pyx_v_i_global;
-        __pyx_t_15 = __pyx_v_j_global;
-        if (__pyx_t_14 < 0) __pyx_t_14 += __pyx_v_gx_global.shape[0];
-        if (__pyx_t_15 < 0) __pyx_t_15 += __pyx_v_gx_global.shape[1];
-        *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_gx_global.data + __pyx_t_14 * __pyx_v_gx_global.strides[0]) ) + __pyx_t_15 * __pyx_v_gx_global.strides[1]) )) += ((__pyx_v_gx_local[__pyx_v_i_local])[__pyx_v_j_local]);
+        __pyx_t_10 = __pyx_v_elem;
+        __pyx_t_13 = __pyx_v_j_local;
+        __pyx_v_j_global = (*((unsigned long *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v__ien.data + __pyx_t_10 * __pyx_v__ien.strides[0]) ) + __pyx_t_13 * __pyx_v__ien.strides[1]) )));
 
         /* "cyassembly.pyx":66
- *                                         * (Area/12.)
- *         gx_global[i_global, j_global] += gx_local[i_local][j_local]
- *         gy_global[i_global, j_global] += gy_local[i_local][j_local]             # <<<<<<<<<<<<<<
+ *             for j_local in range(3):
+ *                 j_global = _ien[elem, j_local]
+ *                 k_global[i_global][j_global] += k_local[i_local][j_local]             # <<<<<<<<<<<<<<
+ *                 m_global[i_global][j_global] += m_local[i_local][j_local] *\
+ *                                                 (Area/12.)
  */
-        __pyx_t_16 = __pyx_v_i_global;
-        __pyx_t_17 = __pyx_v_j_global;
-        if (__pyx_t_16 < 0) __pyx_t_16 += __pyx_v_gy_global.shape[0];
-        if (__pyx_t_17 < 0) __pyx_t_17 += __pyx_v_gy_global.shape[1];
-        *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_gy_global.data + __pyx_t_16 * __pyx_v_gy_global.strides[0]) ) + __pyx_t_17 * __pyx_v_gy_global.strides[1]) )) += ((__pyx_v_gy_local[__pyx_v_i_local])[__pyx_v_j_local]);
+        __pyx_t_10 = __pyx_v_i_global;
+        __pyx_t_9 = __pyx_v_j_global;
+        *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_k_global.data + __pyx_t_10 * __pyx_v_k_global.strides[0]) ) + __pyx_t_9 * __pyx_v_k_global.strides[1]) )) += ((__pyx_v_k_local[__pyx_v_i_local])[__pyx_v_j_local]);
+
+        /* "cyassembly.pyx":67
+ *                 j_global = _ien[elem, j_local]
+ *                 k_global[i_global][j_global] += k_local[i_local][j_local]
+ *                 m_global[i_global][j_global] += m_local[i_local][j_local] *\             # <<<<<<<<<<<<<<
+ *                                                 (Area/12.)
+ *                 gx_global[i_global][j_global] += gx_local[i_local][j_local]
+ */
+        __pyx_t_17 = __pyx_v_i_global;
+        __pyx_t_18 = __pyx_v_j_global;
+        *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_m_global.data + __pyx_t_17 * __pyx_v_m_global.strides[0]) ) + __pyx_t_18 * __pyx_v_m_global.strides[1]) )) += (((__pyx_v_m_local[__pyx_v_i_local])[__pyx_v_j_local]) * (__pyx_v_Area / 12.));
+
+        /* "cyassembly.pyx":69
+ *                 m_global[i_global][j_global] += m_local[i_local][j_local] *\
+ *                                                 (Area/12.)
+ *                 gx_global[i_global][j_global] += gx_local[i_local][j_local]             # <<<<<<<<<<<<<<
+ *                 gy_global[i_global][j_global] += gy_local[i_local][j_local]
+ */
+        __pyx_t_19 = __pyx_v_i_global;
+        __pyx_t_20 = __pyx_v_j_global;
+        *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_gx_global.data + __pyx_t_19 * __pyx_v_gx_global.strides[0]) ) + __pyx_t_20 * __pyx_v_gx_global.strides[1]) )) += ((__pyx_v_gx_local[__pyx_v_i_local])[__pyx_v_j_local]);
+
+        /* "cyassembly.pyx":70
+ *                                                 (Area/12.)
+ *                 gx_global[i_global][j_global] += gx_local[i_local][j_local]
+ *                 gy_global[i_global][j_global] += gy_local[i_local][j_local]             # <<<<<<<<<<<<<<
+ */
+        __pyx_t_21 = __pyx_v_i_global;
+        __pyx_t_22 = __pyx_v_j_global;
+        *((double *) ( /* dim=1 */ (( /* dim=0 */ (__pyx_v_gy_global.data + __pyx_t_21 * __pyx_v_gy_global.strides[0]) ) + __pyx_t_22 * __pyx_v_gy_global.strides[1]) )) += ((__pyx_v_gy_local[__pyx_v_i_local])[__pyx_v_j_local]);
       }
     }
   }
 
   /* "cyassembly.pyx":22
- * 
- * 
+ * @cython.boundscheck(False)
+ * @cython.wraparound(False)
  * cdef void _matrix(double[:] _x, double[:] _y, int _numele, int _numnode,             # <<<<<<<<<<<<<<
- *         int[:,:] _ien,
+ *         unsigned long[:,:] _ien,
  *         double[:,:] k_global, double[:,:] m_global,
  */
 
   /* function exit code */
   goto __pyx_L0;
   __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_11);
   __Pyx_WriteUnraisable("cyassembly._matrix", __pyx_clineno, __pyx_lineno, __pyx_filename, 1, 0);
   __pyx_L0:;
+  __Pyx_XDECREF(__pyx_v_idx);
   __Pyx_RefNannyFinishContext();
 }
 
@@ -10105,7 +10136,7 @@ static PyObject *__pyx_memoryview_convert_item_to_object(struct __pyx_memoryview
  * 
  */
         __Pyx_XDECREF(__pyx_r);
-        __pyx_t_1 = __Pyx_GetItemInt(__pyx_v_result, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(2, 498, __pyx_L5_except_error)
+        __pyx_t_1 = __Pyx_GetItemInt(__pyx_v_result, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(2, 498, __pyx_L5_except_error)
         __Pyx_GOTREF(__pyx_t_1);
         __pyx_r = __pyx_t_1;
         __pyx_t_1 = 0;
@@ -18660,7 +18691,7 @@ static PyObject *__pyx_unpickle_Enum__set_state(struct __pyx_MemviewEnum_obj *__
     PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
     __PYX_ERR(2, 12, __pyx_L1_error)
   }
-  __pyx_t_1 = __Pyx_GetItemInt_Tuple(__pyx_v___pyx_state, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 0); if (unlikely(!__pyx_t_1)) __PYX_ERR(2, 12, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_GetItemInt_Tuple(__pyx_v___pyx_state, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_1)) __PYX_ERR(2, 12, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_GIVEREF(__pyx_t_1);
   __Pyx_GOTREF(__pyx_v___pyx_result->name);
@@ -18705,7 +18736,7 @@ static PyObject *__pyx_unpickle_Enum__set_state(struct __pyx_MemviewEnum_obj *__
       PyErr_SetString(PyExc_TypeError, "'NoneType' object is not subscriptable");
       __PYX_ERR(2, 14, __pyx_L1_error)
     }
-    __pyx_t_6 = __Pyx_GetItemInt_Tuple(__pyx_v___pyx_state, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 0); if (unlikely(!__pyx_t_6)) __PYX_ERR(2, 14, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_GetItemInt_Tuple(__pyx_v___pyx_state, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_6)) __PYX_ERR(2, 14, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     __pyx_t_8 = NULL;
     if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_7))) {
@@ -19559,7 +19590,6 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_dict, __pyx_k_dict, sizeof(__pyx_k_dict), 0, 0, 1, 1},
   {&__pyx_n_s_dtype, __pyx_k_dtype, sizeof(__pyx_k_dtype), 0, 0, 1, 1},
   {&__pyx_n_s_dtype_is_object, __pyx_k_dtype_is_object, sizeof(__pyx_k_dtype_is_object), 0, 0, 1, 1},
-  {&__pyx_n_s_empty, __pyx_k_empty, sizeof(__pyx_k_empty), 0, 0, 1, 1},
   {&__pyx_n_s_encode, __pyx_k_encode, sizeof(__pyx_k_encode), 0, 0, 1, 1},
   {&__pyx_n_s_enumerate, __pyx_k_enumerate, sizeof(__pyx_k_enumerate), 0, 0, 1, 1},
   {&__pyx_n_s_error, __pyx_k_error, sizeof(__pyx_k_error), 0, 0, 1, 1},
@@ -19631,10 +19661,11 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_update, __pyx_k_update, sizeof(__pyx_k_update), 0, 0, 1, 1},
   {&__pyx_n_s_x, __pyx_k_x, sizeof(__pyx_k_x), 0, 0, 1, 1},
   {&__pyx_n_s_y, __pyx_k_y, sizeof(__pyx_k_y), 0, 0, 1, 1},
+  {&__pyx_n_s_zeros, __pyx_k_zeros, sizeof(__pyx_k_zeros), 0, 0, 1, 1},
   {0, 0, 0, 0, 0, 0, 0}
 };
 static CYTHON_SMALL_CODE int __Pyx_InitCachedBuiltins(void) {
-  __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) __PYX_ERR(0, 34, __pyx_L1_error)
+  __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) __PYX_ERR(0, 35, __pyx_L1_error)
   __pyx_builtin_ValueError = __Pyx_GetBuiltinName(__pyx_n_s_ValueError); if (!__pyx_builtin_ValueError) __PYX_ERR(1, 272, __pyx_L1_error)
   __pyx_builtin_RuntimeError = __Pyx_GetBuiltinName(__pyx_n_s_RuntimeError); if (!__pyx_builtin_RuntimeError) __PYX_ERR(1, 855, __pyx_L1_error)
   __pyx_builtin_ImportError = __Pyx_GetBuiltinName(__pyx_n_s_ImportError); if (!__pyx_builtin_ImportError) __PYX_ERR(1, 1037, __pyx_L1_error)
@@ -19922,17 +19953,17 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __Pyx_GOTREF(__pyx_tuple__25);
   __Pyx_GIVEREF(__pyx_tuple__25);
 
-  /* "cyassembly.pyx":8
+  /* "cyassembly.pyx":6
  * cimport numpy as np
  * 
  * def fem_matrix(_x, _y, _numele, _numnode, _ien):             # <<<<<<<<<<<<<<
- *   k_global = np.empty((_numnode, _numnode), dtype="float64")
- *   m_global = np.empty((_numnode, _numnode), dtype="float64")
+ *     k_global = np.zeros((_numnode, _numnode), dtype="float64")
+ *     m_global = np.zeros((_numnode, _numnode), dtype="float64")
  */
-  __pyx_tuple__26 = PyTuple_Pack(9, __pyx_n_s_x, __pyx_n_s_y, __pyx_n_s_numele, __pyx_n_s_numnode, __pyx_n_s_ien, __pyx_n_s_k_global, __pyx_n_s_m_global, __pyx_n_s_gx_global, __pyx_n_s_gy_global); if (unlikely(!__pyx_tuple__26)) __PYX_ERR(0, 8, __pyx_L1_error)
+  __pyx_tuple__26 = PyTuple_Pack(9, __pyx_n_s_x, __pyx_n_s_y, __pyx_n_s_numele, __pyx_n_s_numnode, __pyx_n_s_ien, __pyx_n_s_k_global, __pyx_n_s_m_global, __pyx_n_s_gx_global, __pyx_n_s_gy_global); if (unlikely(!__pyx_tuple__26)) __PYX_ERR(0, 6, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__26);
   __Pyx_GIVEREF(__pyx_tuple__26);
-  __pyx_codeobj__27 = (PyObject*)__Pyx_PyCode_New(5, 0, 9, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__26, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_cyassembly_pyx, __pyx_n_s_fem_matrix, 8, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__27)) __PYX_ERR(0, 8, __pyx_L1_error)
+  __pyx_codeobj__27 = (PyObject*)__Pyx_PyCode_New(5, 0, 9, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__26, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_cyassembly_pyx, __pyx_n_s_fem_matrix, 6, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__27)) __PYX_ERR(0, 6, __pyx_L1_error)
 
   /* "View.MemoryView":286
  *         return self.name
@@ -20377,34 +20408,34 @@ if (!__Pyx_RefNanny) {
   if (__Pyx_patch_abc() < 0) __PYX_ERR(0, 1, __pyx_L1_error)
   #endif
 
-  /* "cyassembly.pyx":5
+  /* "cyassembly.pyx":3
  * import cython
  * cimport cython
  * import numpy as np             # <<<<<<<<<<<<<<
  * cimport numpy as np
  * 
  */
-  __pyx_t_1 = __Pyx_Import(__pyx_n_s_numpy, 0, -1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 5, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_Import(__pyx_n_s_numpy, 0, -1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 3, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_np, __pyx_t_1) < 0) __PYX_ERR(0, 5, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_np, __pyx_t_1) < 0) __PYX_ERR(0, 3, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "cyassembly.pyx":8
+  /* "cyassembly.pyx":6
  * cimport numpy as np
  * 
  * def fem_matrix(_x, _y, _numele, _numnode, _ien):             # <<<<<<<<<<<<<<
- *   k_global = np.empty((_numnode, _numnode), dtype="float64")
- *   m_global = np.empty((_numnode, _numnode), dtype="float64")
+ *     k_global = np.zeros((_numnode, _numnode), dtype="float64")
+ *     m_global = np.zeros((_numnode, _numnode), dtype="float64")
  */
-  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_10cyassembly_1fem_matrix, NULL, __pyx_n_s_cyassembly); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 8, __pyx_L1_error)
+  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_10cyassembly_1fem_matrix, NULL, __pyx_n_s_cyassembly); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 6, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_fem_matrix, __pyx_t_1) < 0) __PYX_ERR(0, 8, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_fem_matrix, __pyx_t_1) < 0) __PYX_ERR(0, 6, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
   /* "cyassembly.pyx":1
- * # cython: boundscheck=False             # <<<<<<<<<<<<<<
- * 
- * import cython
+ * import cython             # <<<<<<<<<<<<<<
+ * cimport cython
+ * import numpy as np
  */
   __pyx_t_1 = __Pyx_PyDict_NewPresized(0); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 1, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
@@ -22969,6 +23000,37 @@ static CYTHON_INLINE PyObject* __Pyx_PyInt_From_int(int value) {
     }
 }
 
+/* CIntToPy */
+static CYTHON_INLINE PyObject* __Pyx_PyInt_From_unsigned_long(unsigned long value) {
+    const unsigned long neg_one = (unsigned long) ((unsigned long) 0 - (unsigned long) 1), const_zero = (unsigned long) 0;
+    const int is_unsigned = neg_one > const_zero;
+    if (is_unsigned) {
+        if (sizeof(unsigned long) < sizeof(long)) {
+            return PyInt_FromLong((long) value);
+        } else if (sizeof(unsigned long) <= sizeof(unsigned long)) {
+            return PyLong_FromUnsignedLong((unsigned long) value);
+#ifdef HAVE_LONG_LONG
+        } else if (sizeof(unsigned long) <= sizeof(unsigned PY_LONG_LONG)) {
+            return PyLong_FromUnsignedLongLong((unsigned PY_LONG_LONG) value);
+#endif
+        }
+    } else {
+        if (sizeof(unsigned long) <= sizeof(long)) {
+            return PyInt_FromLong((long) value);
+#ifdef HAVE_LONG_LONG
+        } else if (sizeof(unsigned long) <= sizeof(PY_LONG_LONG)) {
+            return PyLong_FromLongLong((PY_LONG_LONG) value);
+#endif
+        }
+    }
+    {
+        int one = 1; int little = (int)*(unsigned char *)&one;
+        unsigned char *bytes = (unsigned char *)&value;
+        return _PyLong_FromByteArray(bytes, sizeof(unsigned long),
+                                     little, !is_unsigned);
+    }
+}
+
 /* Declarations */
 #if CYTHON_CCOMPLEX
   #ifdef __cplusplus
@@ -23562,6 +23624,195 @@ raise_neg_overflow:
     PyErr_SetString(PyExc_OverflowError,
         "can't convert negative value to int");
     return (int) -1;
+}
+
+/* CIntFromPy */
+static CYTHON_INLINE unsigned long __Pyx_PyInt_As_unsigned_long(PyObject *x) {
+    const unsigned long neg_one = (unsigned long) ((unsigned long) 0 - (unsigned long) 1), const_zero = (unsigned long) 0;
+    const int is_unsigned = neg_one > const_zero;
+#if PY_MAJOR_VERSION < 3
+    if (likely(PyInt_Check(x))) {
+        if (sizeof(unsigned long) < sizeof(long)) {
+            __PYX_VERIFY_RETURN_INT(unsigned long, long, PyInt_AS_LONG(x))
+        } else {
+            long val = PyInt_AS_LONG(x);
+            if (is_unsigned && unlikely(val < 0)) {
+                goto raise_neg_overflow;
+            }
+            return (unsigned long) val;
+        }
+    } else
+#endif
+    if (likely(PyLong_Check(x))) {
+        if (is_unsigned) {
+#if CYTHON_USE_PYLONG_INTERNALS
+            const digit* digits = ((PyLongObject*)x)->ob_digit;
+            switch (Py_SIZE(x)) {
+                case  0: return (unsigned long) 0;
+                case  1: __PYX_VERIFY_RETURN_INT(unsigned long, digit, digits[0])
+                case 2:
+                    if (8 * sizeof(unsigned long) > 1 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 2 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(unsigned long, unsigned long, (((((unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(unsigned long) >= 2 * PyLong_SHIFT) {
+                            return (unsigned long) (((((unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0]));
+                        }
+                    }
+                    break;
+                case 3:
+                    if (8 * sizeof(unsigned long) > 2 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 3 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(unsigned long, unsigned long, (((((((unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(unsigned long) >= 3 * PyLong_SHIFT) {
+                            return (unsigned long) (((((((unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0]));
+                        }
+                    }
+                    break;
+                case 4:
+                    if (8 * sizeof(unsigned long) > 3 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 4 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(unsigned long, unsigned long, (((((((((unsigned long)digits[3]) << PyLong_SHIFT) | (unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(unsigned long) >= 4 * PyLong_SHIFT) {
+                            return (unsigned long) (((((((((unsigned long)digits[3]) << PyLong_SHIFT) | (unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0]));
+                        }
+                    }
+                    break;
+            }
+#endif
+#if CYTHON_COMPILING_IN_CPYTHON
+            if (unlikely(Py_SIZE(x) < 0)) {
+                goto raise_neg_overflow;
+            }
+#else
+            {
+                int result = PyObject_RichCompareBool(x, Py_False, Py_LT);
+                if (unlikely(result < 0))
+                    return (unsigned long) -1;
+                if (unlikely(result == 1))
+                    goto raise_neg_overflow;
+            }
+#endif
+            if (sizeof(unsigned long) <= sizeof(unsigned long)) {
+                __PYX_VERIFY_RETURN_INT_EXC(unsigned long, unsigned long, PyLong_AsUnsignedLong(x))
+#ifdef HAVE_LONG_LONG
+            } else if (sizeof(unsigned long) <= sizeof(unsigned PY_LONG_LONG)) {
+                __PYX_VERIFY_RETURN_INT_EXC(unsigned long, unsigned PY_LONG_LONG, PyLong_AsUnsignedLongLong(x))
+#endif
+            }
+        } else {
+#if CYTHON_USE_PYLONG_INTERNALS
+            const digit* digits = ((PyLongObject*)x)->ob_digit;
+            switch (Py_SIZE(x)) {
+                case  0: return (unsigned long) 0;
+                case -1: __PYX_VERIFY_RETURN_INT(unsigned long, sdigit, (sdigit) (-(sdigit)digits[0]))
+                case  1: __PYX_VERIFY_RETURN_INT(unsigned long,  digit, +digits[0])
+                case -2:
+                    if (8 * sizeof(unsigned long) - 1 > 1 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 2 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(unsigned long, long, -(long) (((((unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(unsigned long) - 1 > 2 * PyLong_SHIFT) {
+                            return (unsigned long) (((unsigned long)-1)*(((((unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])));
+                        }
+                    }
+                    break;
+                case 2:
+                    if (8 * sizeof(unsigned long) > 1 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 2 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(unsigned long, unsigned long, (((((unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(unsigned long) - 1 > 2 * PyLong_SHIFT) {
+                            return (unsigned long) ((((((unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])));
+                        }
+                    }
+                    break;
+                case -3:
+                    if (8 * sizeof(unsigned long) - 1 > 2 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 3 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(unsigned long, long, -(long) (((((((unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(unsigned long) - 1 > 3 * PyLong_SHIFT) {
+                            return (unsigned long) (((unsigned long)-1)*(((((((unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])));
+                        }
+                    }
+                    break;
+                case 3:
+                    if (8 * sizeof(unsigned long) > 2 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 3 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(unsigned long, unsigned long, (((((((unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(unsigned long) - 1 > 3 * PyLong_SHIFT) {
+                            return (unsigned long) ((((((((unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])));
+                        }
+                    }
+                    break;
+                case -4:
+                    if (8 * sizeof(unsigned long) - 1 > 3 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 4 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(unsigned long, long, -(long) (((((((((unsigned long)digits[3]) << PyLong_SHIFT) | (unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(unsigned long) - 1 > 4 * PyLong_SHIFT) {
+                            return (unsigned long) (((unsigned long)-1)*(((((((((unsigned long)digits[3]) << PyLong_SHIFT) | (unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])));
+                        }
+                    }
+                    break;
+                case 4:
+                    if (8 * sizeof(unsigned long) > 3 * PyLong_SHIFT) {
+                        if (8 * sizeof(unsigned long) > 4 * PyLong_SHIFT) {
+                            __PYX_VERIFY_RETURN_INT(unsigned long, unsigned long, (((((((((unsigned long)digits[3]) << PyLong_SHIFT) | (unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])))
+                        } else if (8 * sizeof(unsigned long) - 1 > 4 * PyLong_SHIFT) {
+                            return (unsigned long) ((((((((((unsigned long)digits[3]) << PyLong_SHIFT) | (unsigned long)digits[2]) << PyLong_SHIFT) | (unsigned long)digits[1]) << PyLong_SHIFT) | (unsigned long)digits[0])));
+                        }
+                    }
+                    break;
+            }
+#endif
+            if (sizeof(unsigned long) <= sizeof(long)) {
+                __PYX_VERIFY_RETURN_INT_EXC(unsigned long, long, PyLong_AsLong(x))
+#ifdef HAVE_LONG_LONG
+            } else if (sizeof(unsigned long) <= sizeof(PY_LONG_LONG)) {
+                __PYX_VERIFY_RETURN_INT_EXC(unsigned long, PY_LONG_LONG, PyLong_AsLongLong(x))
+#endif
+            }
+        }
+        {
+#if CYTHON_COMPILING_IN_PYPY && !defined(_PyLong_AsByteArray)
+            PyErr_SetString(PyExc_RuntimeError,
+                            "_PyLong_AsByteArray() not available in PyPy, cannot convert large numbers");
+#else
+            unsigned long val;
+            PyObject *v = __Pyx_PyNumber_IntOrLong(x);
+ #if PY_MAJOR_VERSION < 3
+            if (likely(v) && !PyLong_Check(v)) {
+                PyObject *tmp = v;
+                v = PyNumber_Long(tmp);
+                Py_DECREF(tmp);
+            }
+ #endif
+            if (likely(v)) {
+                int one = 1; int is_little = (int)*(unsigned char *)&one;
+                unsigned char *bytes = (unsigned char *)&val;
+                int ret = _PyLong_AsByteArray((PyLongObject *)v,
+                                              bytes, sizeof(val),
+                                              is_little, !is_unsigned);
+                Py_DECREF(v);
+                if (likely(!ret))
+                    return val;
+            }
+#endif
+            return (unsigned long) -1;
+        }
+    } else {
+        unsigned long val;
+        PyObject *tmp = __Pyx_PyNumber_IntOrLong(x);
+        if (!tmp) return (unsigned long) -1;
+        val = __Pyx_PyInt_As_unsigned_long(tmp);
+        Py_DECREF(tmp);
+        return val;
+    }
+raise_overflow:
+    PyErr_SetString(PyExc_OverflowError,
+        "value too large to convert to unsigned long");
+    return (unsigned long) -1;
+raise_neg_overflow:
+    PyErr_SetString(PyExc_OverflowError,
+        "can't convert negative value to unsigned long");
+    return (unsigned long) -1;
 }
 
 /* CIntFromPy */
@@ -24730,7 +24981,7 @@ __pyx_fail:
 }
 
 /* ObjectToMemviewSlice */
-  static CYTHON_INLINE __Pyx_memviewslice __Pyx_PyObject_to_MemoryviewSlice_dsds_int(PyObject *obj, int writable_flag) {
+  static CYTHON_INLINE __Pyx_memviewslice __Pyx_PyObject_to_MemoryviewSlice_dsds_unsigned_long(PyObject *obj, int writable_flag) {
     __Pyx_memviewslice result = { 0, 0, { 0 }, { 0 }, { 0 } };
     __Pyx_BufFmt_StackElem stack[1];
     int axes_specs[] = { (__Pyx_MEMVIEW_DIRECT | __Pyx_MEMVIEW_STRIDED), (__Pyx_MEMVIEW_DIRECT | __Pyx_MEMVIEW_STRIDED) };
@@ -24741,7 +24992,7 @@ __pyx_fail:
     }
     retcode = __Pyx_ValidateAndInit_memviewslice(axes_specs, 0,
                                                  PyBUF_RECORDS_RO | writable_flag, 2,
-                                                 &__Pyx_TypeInfo_int, stack,
+                                                 &__Pyx_TypeInfo_unsigned_long, stack,
                                                  &result, obj);
     if (unlikely(retcode == -1))
         goto __pyx_fail;

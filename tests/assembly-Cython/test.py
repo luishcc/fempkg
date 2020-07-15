@@ -28,7 +28,7 @@ def test(N):
     t3 = timer()
     return t2-t1, t3-t2, elem
 
-size = 50
+size = 70
 pyt = np.zeros(size)
 cyt = np.zeros(size)
 ns = np.zeros(size)
@@ -40,7 +40,7 @@ for n in range(1,size+1):
 plt.figure(1)
 plt.title('FEM Matrix Assembly timing')
 plt.semilogx(ns, pyt, 'k-', label = 'Python')
-plt.semilogx(ns, cyt, 'b.', label = 'Cython')
+plt.semilogx(ns, cyt, 'b-', label = 'Cython')
 plt.ylabel('Time [s]')
 plt.xlabel('Number of elements')
 plt.legend(loc=0)
