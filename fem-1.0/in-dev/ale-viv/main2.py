@@ -23,7 +23,7 @@ from cython_func.assembly.cyassembly import fem_matrix   # With Cython
 time_start = timer()
 cwd = os.getcwd()
 
-arquivo = "vivTest"
+arquivo = "vivC"
 sim_case = 'vivMovingCylinder'
 
 
@@ -62,11 +62,12 @@ v_in = Re
 psi_top = v_in * 10
 
 p_lagrange = 0.0
-p_smooth = 0.7
-p_wave = 0.0
+p_smooth = 0.6
+p_exp = 1.2
 
 param = {'Re':Re, 'dt':dt, 'tempo':tempo, 'p_lagrange':p_lagrange, \
-            'p_smooth':p_smooth, 'Mesh File':"mesh/"+arquivo+".msh"}
+            'p_smooth':p_smooth, 'p_exp':p_exp ,\
+            'Mesh File':"mesh/"+arquivo+".msh"}
 dir.sim_info_files(results_path, param)
 
 
@@ -199,11 +200,39 @@ sp.random.seed(1)
 # ---------------------- Loop No Tempo ------------------------
 
 time_start_neighbour = timer()
-neighbour_ele, neighbour_nodes = sl.neighbourElements2(nodes, ien)
+# neighbour_ele, neighbour_nodes = sl.neighbourElements2(nodes, ien)
+
+
+f = open('vivC-neighbourNodes.txt', 'r')
+neighbour_nodes = []
+for line in f:
+    temp = line[1:-2].split(', ')
+    for i in range(len(temp)):
+        temp[i] = int(temp[i])
+    neighbour_nodes.append(temp)
+f.close()
+
+f = open('vivC-neighbourElements.txt', 'r')
+neighbour_ele = []
+for line in f:
+    temp = line[1:-2].split(', ')
+    for i in range(len(temp)):
+        temp[i] = int(temp[i])
+    neighbour_ele.append(temp)
+f.close()
+
 time_end_neighbour = timer()
 print("Neighbour structures: ", time_end_neighbour - time_start_neighbour)
 
+def set_mesh_velocity(_y, _vel_c, _center):
+    size = len(_y)
+    _vv = sp.zeros(size)
+    for i in  range(size):
+        d = -1*abs(_y[i]-_center)
+        _vv[i] = (_vel_c +_vel_c*sp.exp(-5))*sp.exp(d) - _vel_c*sp.exp(-5)
+    return _vv
 
+v_c = sp.zeros(nodes)
 time_avg_loop = 0
 for t in range(0, tempo-1):
 
@@ -214,10 +243,12 @@ for t in range(0, tempo-1):
     time_start_smooth = timer()
 
     cyl_vel = 0
-    # y, cylinder_center, cyl_vel = move_cylinder(cylinder, y, 0.3, 16, t*dt, dt)
-    cylinder_center, cyl_vel = move_cylinder2(cylinder, y, 0.3, 16, t*dt, dt)
+    y, cylinder_center, cyl_vel = move_cylinder(cylinder, y, 0.3, 16, t*dt, dt)
+    # cylinder_center, cyl_vel = move_cylinder2(cylinder, y, 0.3, 16, t*dt, dt)
     for i in cylinder:
         psi_bc[i] = 0.1 * psi_top * cylinder_center
+
+    vy_exp = set_mesh_velocity(y, cyl_vel, cylinder_center)
 
 #    vx_smooth, vy_smooth = Gm.smoothMesh(neighbour_nodes, malha, x, y, dt)
     vx_smooth, vy_smooth = Gm.weighted_smoothMesh(neighbour_nodes, Boundary,
@@ -229,7 +260,7 @@ for t in range(0, tempo-1):
 
     time_start_ale = timer()
     vx_mesh = p_lagrange * vx + p_smooth * vx_smooth
-    vy_mesh = p_lagrange * vy + p_smooth * vy_smooth
+    vy_mesh = p_lagrange * vy + p_smooth * vy_smooth + p_exp * vy_exp
 
     for i in range(num_bc):
         index = int(Boundary[i])
@@ -243,12 +274,14 @@ for t in range(0, tempo-1):
             vx[index] = 0
             vy[index] = cyl_vel
             vy_mesh[index] = cyl_vel
+            v_c[index] = cyl_vel
+
+
+    x = x + vx_mesh * dt
+    y = y + (vy_mesh - v_c) * dt
 
     vxAle = vx - vx_mesh
     vyAle = vy - vy_mesh
-
-    x = x + vx_mesh * dt
-    y = y + vy_mesh * dt
 
     Wz_dep = sl.Linear2D(nodes, neighbour_ele, ien, x, y, vxAle,
                             vyAle, dt, Wz_old)

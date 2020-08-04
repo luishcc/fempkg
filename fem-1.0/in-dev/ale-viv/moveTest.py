@@ -15,7 +15,7 @@ from cython_func.assembly.cyassembly import fem_matrix   # With Cython
 cwd = os.getcwd()
 
 arquivo = "vivC"
-sim_case = 'vivMovingCylinder-Test'
+sim_case = 'vivMovingTest'
 
 import importlib.util
 spec = importlib.util.spec_from_file_location("resultsdir",
@@ -36,7 +36,8 @@ num_ele = len(ien)
 dt = 0.001
 tempo = 400
 
-p_smooth = 0.7
+p_smooth = 0.6
+p_exp = 1.3
 
 # ---------------------------------------
 # Cylinder movement function
@@ -47,8 +48,9 @@ def  move_cylinder2(_nodes, _y, _y_max, _f_0, _t, _dt):
   _center = 0
   _len_cylinder = len(_nodes)
   for i in _nodes:
+    _y[i] = _y[i] + vel*_dt
     _center += _y[i] / _len_cylinder
-  return _center, vel
+  return _center, vel , _y
 
 # ---------------------------------------
 # Wz, Psi and Initial Velocity
@@ -89,13 +91,47 @@ Boundary = sp.delete(Boundary, lista, axis=0)
 num_bc = len(Boundary)
 
 
-sp.random.seed(1)
-
 # ----------------------------------------------------------
 # ---------------------- Loop No Tempo ------------------------
 
-neighbour_ele, neighbour_nodes = sl.neighbourElements2(nodes, ien)
+#neighbour_ele, neighbour_nodes = sl.neighbourElements2(nodes, ien)
 
+
+f = open('vivC-neighbourNodes.txt', 'r')
+neighbour_nodes = []
+for line in f:
+    temp = line[1:-2].split(', ')
+    for i in range(len(temp)):
+        temp[i] = int(temp[i])
+    neighbour_nodes.append(temp)
+f.close()
+
+f = open('vivC-neighbourElements.txt', 'r')
+neighbour_ele = []
+for line in f:
+    temp = line[1:-2].split(', ')
+    for i in range(len(temp)):
+        temp[i] = int(temp[i])
+    neighbour_ele.append(temp)
+f.close()
+
+
+# def get_distance_y(_y, _center):
+#     size = len(_y)
+#     distance = sp.zeros(size)
+#     for i in range(size):
+#         distance[i] = abs(_y[i] - _center)
+#     return distance
+
+def set_mesh_velocity(_y, _vel_c, _center):
+    size = len(_y)
+    _vv = sp.zeros(size)
+    for i in  range(size):
+        d = -1*abs(_y[i]-_center)
+        _vv[i] = (_vel_c +_vel_c*sp.exp(-5))*sp.exp(d) - _vel_c*sp.exp(-5)
+    return _vv
+
+vx_mesh = sp.zeros(nodes)
 
 for t in range(0, tempo-1):
 
@@ -103,30 +139,30 @@ for t in range(0, tempo-1):
     print("Solving System " + str((float(t)/(tempo-1))*100) + "%")
 
     cyl_vel = 0
+    cylinder_center, cyl_vel, y = move_cylinder2(cylinder, y, 0.3, 16, t*dt, dt)
 
-    cylinder_center, cyl_vel = move_cylinder2(cylinder, y, 0.3, 16, t*dt, dt)
+    vy_exp = set_mesh_velocity(y, cyl_vel, cylinder_center)
 
     vx_smooth, vy_smooth = Gm.weighted_smoothMesh(neighbour_nodes, Boundary,
                                                     x, y, dt)
 
-
-
     vx_mesh = p_smooth * vx_smooth
-    vy_mesh = p_smooth * vy_smooth
+    vy_mesh = p_smooth * vy_smooth + p_exp * vy_exp
 
     for i in range(num_bc):
         index = int(Boundary[i])
         vx_mesh[index] = 0
         vy_mesh[index] = 0
 
-        if index in cylinder:
-            vy_mesh[index] = cyl_vel
+        # if index in cylinder:
+        #     vy_mesh[index] = cyl_vel
 
     x = x + vx_mesh * dt
     y = y + vy_mesh * dt
 
+
     # Save VTK
     vtk = Io.InOut(x, y, ien, len(x), len(ien), Wz, Wz, Wz,
-                    None, None, Wz, Wz, vx_mesh, vy_mesh)
+                    None, None, Wz, Wz, vx_mesh, vy_exp)
     vtk.saveVTK(vtk_path, arquivo + '-' + str(t+1))
     vtk.saveVTK(vtk_path, arquivo + '-last')
