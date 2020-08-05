@@ -2,9 +2,9 @@
 
 import os
 
-#os.environ["MKL_NUM_THREADS"] = "8"
-#os.environ["NUMEXPR_NUM_THREADS"] = "8"
-#os.environ["OMP_NUM_THREADS"] = "8"
+os.environ["MKL_NUM_THREADS"] = "3"
+os.environ["NUMEXPR_NUM_THREADS"] = "3"
+os.environ["OMP_NUM_THREADS"] = "3"
 
 import scipy as sp
 from scipy import linalg
@@ -55,14 +55,14 @@ time_end_read = timer()
 
 print("Read .msh in: ", time_end_read - time_start_read)
 
-dt = 0.001
-tempo = 400
+dt = 0.01
+tempo = 2000
 Re = 100
-v_in = Re
-psi_top = v_in * 10
+v_in = 1
+psi_top = 10
 
 p_lagrange = 0.0
-p_smooth = 0.6
+p_smooth = 0.0
 p_exp = 1.2
 
 param = {'Re':Re, 'dt':dt, 'tempo':tempo, 'p_lagrange':p_lagrange, \
@@ -99,7 +99,7 @@ def  move_cylinder2(_nodes, _y, _y_max, _f_0, _t, _dt):
 
 Psi_new = sp.zeros(nodes, dtype="float64")
 Wz_new = sp.zeros(nodes, dtype="float64")
-vx = sp.zeros(nodes, dtype="float64") + v_in
+vx = sp.zeros(nodes, dtype="float64") #+ v_in
 vy = sp.zeros(nodes, dtype="float64")
 
 # ---------------------------------------
@@ -148,6 +148,8 @@ for i in range(nodes):
 Boundary = sp.delete(Boundary, lista, axis=0)
 num_bc = len(Boundary)
 
+# cylinder = sp.ones(num_bc)*-1
+
 # ---------------------------------------
 # Boundary and Initial Conditions
 # ---------------------------------------
@@ -166,7 +168,8 @@ for i in Boundary:
 
 
 Minv = sp.linalg.inv(M)
-Wz_old = sp.dot(Minv, (sp.dot(Gx, vy) - sp.dot(Gy, vx))) * w_temp
+#Wz_old = sp.dot(Minv, (sp.dot(Gx, vy) - sp.dot(Gy, vx))) * w_temp
+Wz_old = sp.zeros(nodes)
 
 K_psi = sp.copy(K)
 ccpsi = sp.zeros(nodes)
@@ -203,7 +206,7 @@ time_start_neighbour = timer()
 # neighbour_ele, neighbour_nodes = sl.neighbourElements2(nodes, ien)
 
 
-f = open('vivC-neighbourNodes.txt', 'r')
+f = open(arquivo+'-neighbourNodes.txt', 'r')
 neighbour_nodes = []
 for line in f:
     temp = line[1:-2].split(', ')
@@ -212,7 +215,7 @@ for line in f:
     neighbour_nodes.append(temp)
 f.close()
 
-f = open('vivC-neighbourElements.txt', 'r')
+f = open(arquivo+'-neighbourElements.txt', 'r')
 neighbour_ele = []
 for line in f:
     temp = line[1:-2].split(', ')
@@ -242,13 +245,13 @@ for t in range(0, tempo-1):
 
     time_start_smooth = timer()
 
-    cyl_vel = 0
-    y, cylinder_center, cyl_vel = move_cylinder(cylinder, y, 0.3, 16, t*dt, dt)
+#    cyl_vel = 0
+#    y, cylinder_center, cyl_vel = move_cylinder(cylinder, y, 0.3, 16, t*dt, dt)
     # cylinder_center, cyl_vel = move_cylinder2(cylinder, y, 0.3, 16, t*dt, dt)
-    for i in cylinder:
-        psi_bc[i] = 0.1 * psi_top * cylinder_center
+#    for i in cylinder:
+#        psi_bc[i] = 0.1 * psi_top * cylinder_center
 
-    vy_exp = set_mesh_velocity(y, cyl_vel, cylinder_center)
+#    vy_exp = set_mesh_velocity(y, cyl_vel, cylinder_center)
 
 #    vx_smooth, vy_smooth = Gm.smoothMesh(neighbour_nodes, malha, x, y, dt)
     vx_smooth, vy_smooth = Gm.weighted_smoothMesh(neighbour_nodes, Boundary,
@@ -260,25 +263,27 @@ for t in range(0, tempo-1):
 
     time_start_ale = timer()
     vx_mesh = p_lagrange * vx + p_smooth * vx_smooth
-    vy_mesh = p_lagrange * vy + p_smooth * vy_smooth + p_exp * vy_exp
+    vy_mesh = p_lagrange * vy + p_smooth * vy_smooth #+ p_exp * vy_exp
 
     for i in range(num_bc):
         index = int(Boundary[i])
         vx_mesh[index] = 0
         vy_mesh[index] = 0
 
-        if x[index] == 0 or y[index] == 10 or y[index] == 0:
-            vx[index] = v_in
-            vy[index] = 0
-        if index in cylinder:
-            vx[index] = 0
-            vy[index] = cyl_vel
-            vy_mesh[index] = cyl_vel
-            v_c[index] = cyl_vel
+        # if x[index] == 0 or y[index] == 10 or y[index] == 0:
+        #     vx[index] = v_in
+        #     vy[index] = 0
+        # if index in cylinder:
+        #     vx[index] = 0
+        #     vy[index] = 0
+#            vy[index] = cyl_vel
+#            vy_mesh[index] = cyl_vel
+#            v_c[index] = cyl_vel
 
 
     x = x + vx_mesh * dt
-    y = y + (vy_mesh - v_c) * dt
+#    y = y + (vy_mesh - v_c) * dt
+    y = y + vy_mesh  * dt
 
     vxAle = vx - vx_mesh
     vyAle = vy - vy_mesh
@@ -290,7 +295,7 @@ for t in range(0, tempo-1):
 
     K, M, Gx, Gy = fem_matrix(x, y, num_ele, nodes, ien)
 
-    Minv = linalg.inv(M)
+    #Minv = linalg.inv(M)
 
     time_end_ale = timer()
     print("ALE step time: ", time_end_ale - time_start_ale)
@@ -302,7 +307,7 @@ for t in range(0, tempo-1):
     Wcc = sp.dot(Minv, (sp.dot(Gx, vy) - sp.dot(Gy, vx))) * w_temp
     ccomega = sp.zeros(nodes)
 
-
+    # Solve vorticity Transport
     LHS = M / dt + K / Re
     LHS_omega = sp.copy(LHS)
 
@@ -317,7 +322,7 @@ for t in range(0, tempo-1):
             else:
                 LHS_omega[index, j] = 1
 
-    F_omega = sp.dot(M / dt, Wz_dep) + ccomega / Re
+    F_omega = sp.dot(M / dt, Wz_dep) + ccomega # / Re
 
     for i in range(num_bc):
         index = int(Boundary[i])
@@ -328,6 +333,7 @@ for t in range(0, tempo-1):
     time_end_wz = timer()
     print("Omega solution time: ", time_end_wz - time_start_wz)
 
+    # Solve Stream Function
     time_start_psi = timer()
 
     K_psi = sp.copy(K)
@@ -356,19 +362,34 @@ for t in range(0, tempo-1):
     time_end_psi = timer()
     print("Psi solution time: ", time_end_psi - time_start_psi)
 
+    # Saving last step solution
+    Psi_old = sp.copy(Psi_new)
+    Wz_old = sp.copy(Wz_new)
+
+    # Calculate Vx e Vy
+#    vx = sp.dot(Minv, sp.dot(Gy, Psi_new))
+#    vy = -1.0 * sp.dot(Minv, sp.dot(Gx, Psi_new))
+    vx = sp.linalg.solve(M, sp.dot(Gy, Psi_new))
+    vy = -1.0 * sp.linalg.solve(M, sp.dot(Gx, Psi_new))
+    # Setting velocity BC
+    for i in range(num_bc):
+        index = int(Boundary[i])
+        if x[index] == 0 :
+            vx[index] = v_in
+            vy[index] = 0
+        if y[index] == 10 or y[index] == 0:
+            vx[index] = v_in
+            vy[index] = 0
+        if index in cylinder:
+            vx[index] = 0
+            vy[index] = cyl_vel
+
+
     # Save VTK
     vtk = Io.InOut(x, y, ien, len(x), len(ien), Psi_old, Wz_old, Wz_dep,
                     None, None, vx, vy, vxAle, vyAle)
     vtk.saveVTK(vtk_path, arquivo + '-' + str(t+1))
     vtk.saveVTK(vtk_path, arquivo + '-last')
-
-
-    Psi_old = sp.copy(Psi_new)
-    Wz_old = sp.copy(Wz_new)
-
-    # Calculate Vx e Vy
-    vx = sp.dot(Minv, sp.dot(Gy, Psi_new))
-    vy = -1.0 * sp.dot(Minv, sp.dot(Gx, Psi_new))
 
     time_end_loop = timer()
     time_avg_loop += time_end_loop - time_start_loop

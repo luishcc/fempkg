@@ -9,7 +9,7 @@ import semiLagrangean as sl
 
 cwd = os.getcwd()
 
-arquivo = "vivC"
+arquivo = "viv"
 
 malha = Gm.GMesh("mesh/"+arquivo+".msh")
 x = malha.X
@@ -83,7 +83,7 @@ for i in range(len(neighbour_nodes)):
     ele_temp = str(neighbour_ele[i])
     neighbourfile.writelines(nodes_temp+"\n")
     neighbourfile2.writelines(ele_temp+"\n")
-
+exit()
 # for i in range(1):
 #     vx_smooth, vy_smooth = Gm.weighted_smoothMesh(neighbour_nodes, Boundary, x, y, dt)
 #     x = x + p_smooth*vx_smooth  * dt
