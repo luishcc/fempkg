@@ -1,10 +1,9 @@
 name: fem
 dependencies:
   - python=3.*   # or 2.7
-  - numpy=1.9.*
+  - numpy
   - scipy
   - matplotlib
   - pip:
-    - Flask-Testing
-    - triangle
     - meshio
+    - cython
