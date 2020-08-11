@@ -55,9 +55,9 @@ time_end_read = timer()
 
 print("Read .msh in: ", time_end_read - time_start_read)
 
-dt = 0.01
+dt = 0.05
 tempo = 2000
-Re = 100
+Re = 10
 v_in = 1
 psi_top = 10
 
@@ -245,7 +245,7 @@ for t in range(0, tempo-1):
 
     time_start_smooth = timer()
 
-#    cyl_vel = 0
+    cyl_vel = 0
 #    y, cylinder_center, cyl_vel = move_cylinder(cylinder, y, 0.3, 16, t*dt, dt)
     # cylinder_center, cyl_vel = move_cylinder2(cylinder, y, 0.3, 16, t*dt, dt)
 #    for i in cylinder:
@@ -361,6 +361,12 @@ for t in range(0, tempo-1):
 
     time_end_psi = timer()
     print("Psi solution time: ", time_end_psi - time_start_psi)
+
+    # Check for steady state with vorticity solution
+    err = Wz_new - Wz_old
+    err = sp.sqrt(sp.dot(err,err))
+    if err < 1e-8:
+        break
 
     # Saving last step solution
     Psi_old = sp.copy(Psi_new)
