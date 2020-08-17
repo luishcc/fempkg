@@ -1,0 +1,22 @@
+
+Point(1) = {0, 0, 0, 1.2};
+Point(2) = {0, 10, 0, 1.2};
+Point(3) = {32.5, 10, 0, 1.2};
+Point(4) = {32.5, 0, 0, 1.2};
+
+Line(1) = {1, 2};
+Line(2) = {2, 3};
+Line(3) = {3, 4};
+Line(4) = {4, 1};
+
+
+Line Loop(1) = {2, 3, 4, 1};
+Plane Surface(1) = {1};
+
+Physical Line("inlet") = {1};
+Physical Line("outlet") = {3};
+Physical Line("top") = {2};
+Physical Line("bot") = {4};
+
+
+Physical Surface(6) = {1};
