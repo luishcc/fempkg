@@ -3,13 +3,14 @@ cimport cython
 import numpy as np
 cimport numpy as np
 
-def fem_matrix(_x, _y, _numele, _numnode, _ien):
-    k_global = np.zeros((_numnode, _numnode), dtype="float64")
-    m_global = np.zeros((_numnode, _numnode), dtype="float64")
-    gx_global = np.zeros((_numnode, _numnode), dtype="float64")
-    gy_global = np.zeros((_numnode, _numnode), dtype="float64")
+def fem_matrix(_mesh):
 
-    _matrix(_x, _y, _numele, _numnode, _ien,
+    k_global = np.zeros((_mesh.num_nodes, _mesh.num_nodes), dtype="float64")
+    m_global = np.zeros((_mesh.num_nodes, _mesh.num_nodes), dtype="float64")
+    gx_global = np.zeros((_mesh.num_nodes, _mesh.num_nodes), dtype="float64")
+    gy_global = np.zeros((_mesh.num_nodes, _mesh.num_nodes), dtype="float64")
+
+    _matrix(_mesh.x, _mesh.y, _mesh.num_elem, _mesh.num_nodes, _mesh.ien,
           k_global, m_global,
           gx_global,  gy_global)
 
@@ -20,12 +21,12 @@ def fem_matrix(_x, _y, _numele, _numnode, _ien):
 @cython.boundscheck(False)
 @cython.wraparound(False)
 cdef void _matrix(double[:] _x, double[:] _y, int _numele, int _numnode,
-        unsigned long[:,:] _ien,
+        int[:,:] _ien,
         double[:,:] k_global, double[:,:] m_global,
         double[:,:] gx_global,  double[:,:] gy_global):
 
     cdef:
-        unsigned long elem, i, j, i_global, j_global
+        int elem, i, j, i_global, j_global
         int i_local = 0, j_local = 0
         double Area
         double[3] a, b, c, xx, yy

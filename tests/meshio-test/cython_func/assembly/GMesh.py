@@ -245,11 +245,7 @@ class GMesh:
                 lista_neu.append(i)
         self.Boundary_Neumann = sp.delete(self.Boundary_Neumann, lista_neu, axis=0)
 
-        self.num_nodes = self.Nnodes
-        self.num_elem = self.Nelem
-        self.x = self.X
-        self.y = self.Y
-        self.ien = self.IEN
+
 #----------------------------------------------------------------------
 #-------------------- Other Mesh functions ----------------------------
 #----------------------------------------------------------------------

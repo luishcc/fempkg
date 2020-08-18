@@ -3,15 +3,22 @@
 import numpy as np
 import meshio
 
+from cython_func.neighbours.cy import cy_neighbours
+from neighbours import py_neighbours
+
+
 
 class Mesh:
-    def __init__(self, mshfilename):
+    def __init__(self, mshfile):
 
-        _msh = meshio.read(mshfilename)
+        _msh = meshio.read(mshfile)
 
         self.x = _msh.points[:,0]
         self.y = _msh.points[:,1]
         self.ien = _msh.cells_dict['triangle']
+
+        self.neighbour_nodes = None
+        self.neighbour_elements = None
 
         self.num_nodes = len(self.x)
         self.num_elem = len(self.ien)
@@ -45,6 +52,29 @@ class Mesh:
                 points.append(self.boundary_nodes[i])
         return points
 
+    def set_neighbours(self, _file=None):
+        if _file is not None:
+            f = open(_file+'-neighbourNodes.txt', 'r')
+            self.neighbour_nodes = []
+            for line in f:
+                temp = line[1:-2].split(', ')
+                for i in range(len(temp)):
+                    temp[i] = int(temp[i])
+                self.neighbour_nodes.append(temp)
+            f.close()
+
+            f = open(_file+'-neighbourElements.txt', 'r')
+            self.neighbour_elements = []
+            for line in f:
+                temp = line[1:-2].split(', ')
+                for i in range(len(temp)):
+                    temp[i] = int(temp[i])
+                neighbour_ele.append(temp)
+            f.close()
+        else:
+            #self.neighbour_nodes, self.neighbour_elements = cy_neighbours()
+            self.neighbour_nodes, self.neighbour_elements = py_neighbours(self.num_nodes, self.ien)
+
 
 #----------------------------------------------------------------------
 #-------------------- Other Mesh functions ----------------------------
@@ -59,16 +89,19 @@ def distance(_a,_b):
     return sp.sqrt(sum)
 
 
-def smoothMesh(_neighbour_nodes, _mesh, _x, _y, _dt):
+def smoothMesh(_mesh, _dt):
 
-    xx = sp.copy(_x)
-    yy = sp.copy(_y)
+    if _mesh.neighbour_nodes is None:
+        _mesh.set_neighbours()
+
+    xx = sp.copy(_mesh.x)
+    yy = sp.copy(_mesh.y)
     vx_disp = sp.zeros(len(xx))
     vy_disp = sp.zeros(len(xx))
-    for i in range(len(_neighbour_nodes)):
+    for i in range(len(_mesh.neighbour_nodes)):
 
         flag = 0
-        for k in _mesh.Boundary_Nodes:
+        for k in _mesh.boundary_nodes:
             if i == k:
                 flag = 1
                 break
@@ -77,7 +110,7 @@ def smoothMesh(_neighbour_nodes, _mesh, _x, _y, _dt):
             continue
 
         vertex_position = sp.array([xx[i], yy[i]])
-        nghN = _neighbour_nodes[i]
+        nghN = _mesh.neighbour_nodes[i]
         num_nghb = len(nghN)
         distance_vectors = sp.zeros((num_nghb, 2))
         displacement_vector = sp.zeros(2)
@@ -91,10 +124,7 @@ def smoothMesh(_neighbour_nodes, _mesh, _x, _y, _dt):
         vx_disp[i] = displacement_velocity[0]
         vy_disp[i] = displacement_velocity[1]
 
-      #  print nghN, "\n", distance_vectors, "\n", displacement_vector, "\n", new_position
-
     return vx_disp, vy_disp
-
 
 
 def weighted_smoothMesh(_neighbour_nodes, _boundary, _x, _y, _dt):
