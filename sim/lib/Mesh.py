@@ -3,7 +3,7 @@
 import numpy as np
 import meshio
 
-from cython_func.neighbours.cy import cy_neighbours
+#from cython_func.neighbours.cy import cy_neighbours
 from neighbours import py_neighbours
 
 
@@ -44,15 +44,41 @@ class Mesh:
             self.boundary_names[self.ien_boundary[elem][1]] = \
                 self.ien_boundary_types[elem]
 
+        self.dirichlet_nodes = None
 
     def get_boundary_with_name(self, name):
+        ''' Returns all boundary points that have the same type
+            *arg name: Type of the boundary (ex: 'wall', 'outlet')
+        '''
         points = []
         for i in range(len(self.boundary_names)):
             if self.boundary_names[i] == name:
                 points.append(self.boundary_nodes[i])
         return points
 
+
+    def set_dirichlet_nodes(self, _boundaryTypes):
+        ''' Sets a list with all boundary nodes that have a
+        prescribed dirichlet condition.
+            *arg _boundaryTypes: list of boundary names ex.: ['inlet', 'wall']
+        '''
+        if self.dirichlet_nodes is not None:
+            return
+        _dirichlet_nodes = []
+        for type in _boundaryTypes:
+            _dirichlet_nodes.extend(self.get_boundary_with_name(type))
+            print(_dirichlet_nodes)
+        # self.dirichlet_nodes = list(np.unique(_dirichlet_nodes))
+        # self.dirichlet_nodes = np.unique(_dirichlet_nodes)
+        self.dirichlet_nodes = _dirichlet_nodes
+
+
     def set_neighbours(self, _file=None):
+        ''' Sets the neighbours Data Arrays
+        returns: Neighbour Elements, Neighbour Nodes
+        *kwarg _file: If given, uses the file contents as the structures
+                        instead of calculating
+        '''
         if _file is not None:
             f = open(_file+'-neighbourNodes.txt', 'r')
             self.neighbour_nodes = []
@@ -69,11 +95,11 @@ class Mesh:
                 temp = line[1:-2].split(', ')
                 for i in range(len(temp)):
                     temp[i] = int(temp[i])
-                neighbour_ele.append(temp)
+                self.neighbour_elements.append(temp)
             f.close()
         else:
             #self.neighbour_nodes, self.neighbour_elements = cy_neighbours()
-            self.neighbour_nodes, self.neighbour_elements = py_neighbours(self.num_nodes, self.ien)
+            self.neighbour_elements, self.neighbour_nodes = py_neighbours(self.num_nodes, self.ien)
 
 
 #----------------------------------------------------------------------
@@ -90,6 +116,7 @@ def distance(_a,_b):
 
 
 def smoothMesh(_mesh, _dt):
+
 
     if _mesh.neighbour_nodes is None:
         _mesh.set_neighbours()

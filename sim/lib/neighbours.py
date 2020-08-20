@@ -1,4 +1,5 @@
 from numpy import unique
+import scipy as sp
 
 def py_neighbours(_np, _ien):
     result_ele = [None] * _np
@@ -36,13 +37,14 @@ def py_neighbours2(_np, _ien):
         result_ele[i] = []
         result_node[i] = []
         for e in range(len(_ien)):
-            vertex = sp.array([_ien[e, 0], _ien[e, 1], _ien[e, 2]])
+            vertex = [_ien[e, 0], _ien[e, 1], _ien[e, 2]]
             for j in range(3):
                 if vertex[j] == i:
                     result_ele[i].append(e)
                     del vertex[j]
                     result_node[i].extend(vertex)
                     break
-        result_node[i] = unique(result_node[i])
+        result_node[i] = list(unique(result_node[i]))
+
 
     return result_ele, result_node

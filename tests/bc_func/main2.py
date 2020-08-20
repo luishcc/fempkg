@@ -179,7 +179,7 @@ for i in range(num_bc):
     value = psi_bc[index]
     if y[index] == 0.0 or y[index] == 10.0 or \
     (index in cylinder) or x[index] == 0:
-        ccpsi[index] -= value * K[j, index]
+        ccpsi[index] -= value * K[i, index]
         for j in range(nodes):
             if j != index:
                 K_psi[index, j] = 0
