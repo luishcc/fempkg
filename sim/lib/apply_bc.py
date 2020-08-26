@@ -1,12 +1,11 @@
 import numpy as np
 
 
-def apply_bc_dirichlet(_LHS, _mesh, _bc_value):
+def apply_bc_dirichlet(_LHS, _mesh, _dirichlet_nodes, _bc_value):
 
-    _dirichlet_nodes = _mesh.dirichlet_nodes
     A = np.copy(_LHS)
     bc_RHS = np.zeros(_mesh.num_nodes)
-    num_bc = len(_mesh.dirichlet_nodes)
+    num_bc = len(_dirichlet_nodes)
 
     for i in range(num_bc):
         index = _dirichlet_nodes[i]

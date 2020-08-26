@@ -48,3 +48,41 @@ def py_neighbours2(_np, _ien):
 
 
     return result_ele, result_node
+
+
+def py_neighbours3(_np, _ien):
+
+    result_ele = {}
+    result_node = {}
+    for i in range(_np):
+        result_ele[i] = []
+        result_node[i] = []
+
+    for e in range(len(_ien)):
+        v1 = _ien[e][0]
+        v2 = _ien[e][1]
+        v3 = _ien[e][2]
+
+        temp = [v1,v2,v3]
+        #print(temp)
+
+        result_node[v1].extend(temp)
+        result_node[v2].extend(temp)
+        result_node[v3].extend(temp)
+
+        result_node[v1] = list(set(result_node[v1]))
+        result_node[v2] = list(set(result_node[v2]))
+        result_node[v3] = list(set(result_node[v3]))
+
+        result_ele[v1].append(e)
+        result_ele[v2].append(e)
+        result_ele[v3].append(e)
+
+    r_e = [[]] *_np
+    r_n = [[]] *_np
+    for i in range(_np):
+        r_e[i] = result_ele[i]
+        r_n[i] = result_node[i]
+        r_n[i].remove(i)
+        
+    return r_e, r_n

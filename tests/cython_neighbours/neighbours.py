@@ -64,7 +64,7 @@ def py_neighbours3(_np, _ien):
         v3 = _ien[e][2]
 
         temp = [v1,v2,v3]
-        print(temp)
+        #print(temp)
 
         result_node[v1].extend(temp)
         result_node[v2].extend(temp)
@@ -83,4 +83,6 @@ def py_neighbours3(_np, _ien):
     for i in range(_np):
         r_e[i] = result_ele[i]
         r_n[i] = result_node[i]
+        r_n[i].remove(i)
+        
     return r_e, r_n

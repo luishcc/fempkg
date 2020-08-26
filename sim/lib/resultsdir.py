@@ -2,9 +2,9 @@ import os
 import sys
 
 
-_PATH = os.path.expanduser('~') + '/fempkg/results/'
+_PATH = os.path.expanduser('~') + '/fempkg/sim/results/'
 if not os.path.isdir(_PATH):
-  os.mkdir(_PATH)	
+  os.mkdir(_PATH)
 
 def make_dir(_name):
   dir = _name + '-0'

@@ -4,7 +4,7 @@ import numpy as np
 import meshio
 
 #from cython_func.neighbours.cy import cy_neighbours
-from neighbours import py_neighbours
+from lib.neighbours import py_neighbours3 as py_neighbours
 
 
 
@@ -16,9 +16,6 @@ class Mesh:
         self.x = _msh.points[:,0]
         self.y = _msh.points[:,1]
         self.ien = _msh.cells_dict['triangle']
-
-        self.neighbour_nodes = None
-        self.neighbour_elements = None
 
         self.num_nodes = len(self.x)
         self.num_elem = len(self.ien)
@@ -45,6 +42,7 @@ class Mesh:
                 self.ien_boundary_types[elem]
 
         self.dirichlet_nodes = None
+        self.neighbour_elements, self.neighbour_nodes = self.set_neighbours()
 
     def get_boundary_with_name(self, name):
         ''' Returns all boundary points that have the same type
@@ -62,15 +60,11 @@ class Mesh:
         prescribed dirichlet condition.
             *arg _boundaryTypes: list of boundary names ex.: ['inlet', 'wall']
         '''
-        if self.dirichlet_nodes is not None:
-            return
         _dirichlet_nodes = []
         for type in _boundaryTypes:
             _dirichlet_nodes.extend(self.get_boundary_with_name(type))
-            print(_dirichlet_nodes)
-        # self.dirichlet_nodes = list(np.unique(_dirichlet_nodes))
-        # self.dirichlet_nodes = np.unique(_dirichlet_nodes)
-        self.dirichlet_nodes = _dirichlet_nodes
+
+        return _dirichlet_nodes
 
 
     def set_neighbours(self, _file=None):
@@ -99,7 +93,7 @@ class Mesh:
             f.close()
         else:
             #self.neighbour_nodes, self.neighbour_elements = cy_neighbours()
-            self.neighbour_elements, self.neighbour_nodes = py_neighbours(self.num_nodes, self.ien)
+            return  py_neighbours(self.num_nodes, self.ien)
 
 
 #----------------------------------------------------------------------
@@ -112,7 +106,7 @@ def distance(_a,_b):
     sum = 0
     for i in range(size):
         sum += (_b[i] - _a[i])**2
-    return sp.sqrt(sum)
+    return np.sqrt(sum)
 
 
 def smoothMesh(_mesh, _dt):
@@ -121,10 +115,10 @@ def smoothMesh(_mesh, _dt):
     if _mesh.neighbour_nodes is None:
         _mesh.set_neighbours()
 
-    xx = sp.copy(_mesh.x)
-    yy = sp.copy(_mesh.y)
-    vx_disp = sp.zeros(len(xx))
-    vy_disp = sp.zeros(len(xx))
+    xx = np.copy(_mesh.x)
+    yy = np.copy(_mesh.y)
+    vx_disp = np.zeros(len(xx))
+    vy_disp = np.zeros(len(xx))
     for i in range(len(_mesh.neighbour_nodes)):
 
         flag = 0
@@ -136,11 +130,11 @@ def smoothMesh(_mesh, _dt):
         if flag == 1:
             continue
 
-        vertex_position = sp.array([xx[i], yy[i]])
+        vertex_position = np.array([xx[i], yy[i]])
         nghN = _mesh.neighbour_nodes[i]
         num_nghb = len(nghN)
-        distance_vectors = sp.zeros((num_nghb, 2))
-        displacement_vector = sp.zeros(2)
+        distance_vectors = np.zeros((num_nghb, 2))
+        displacement_vector = np.zeros(2)
         for j in range(num_nghb):
             _index = nghN[j]
             distance_vectors[j][0] = xx[_index] - vertex_position[0]
@@ -156,10 +150,10 @@ def smoothMesh(_mesh, _dt):
 
 def weighted_smoothMesh(_neighbour_nodes, _boundary, _x, _y, _dt):
 
-    xx = sp.copy(_x)
-    yy = sp.copy(_y)
-    vx_disp = sp.zeros(len(xx))
-    vy_disp = sp.zeros(len(xx))
+    xx = np.copy(_x)
+    yy = np.copy(_y)
+    vx_disp = np.zeros(len(xx))
+    vy_disp = np.zeros(len(xx))
     for i in range(len(_neighbour_nodes)):
 
         flag = 0
@@ -171,11 +165,11 @@ def weighted_smoothMesh(_neighbour_nodes, _boundary, _x, _y, _dt):
         if flag == 1:
             continue
 
-        vertex_position = sp.array([xx[i], yy[i]])
+        vertex_position = np.array([xx[i], yy[i]])
         nghN = _neighbour_nodes[i]
         num_nghb = len(nghN)
-        distance_vectors = sp.zeros((num_nghb, 2))
-        displacement_vector = sp.zeros(2)
+        distance_vectors = np.zeros((num_nghb, 2))
+        displacement_vector = np.zeros(2)
         sum_length = 0
         for j in range(num_nghb):
             _index = nghN[j]
