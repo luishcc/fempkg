@@ -3,3 +3,6 @@ sim/results/*
 __pycache__/
 *.py[cod]
 *$py.class
+
+
+fem-old/in-dev/ale-cavity/results/*
