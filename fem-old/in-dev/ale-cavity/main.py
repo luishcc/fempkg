@@ -23,7 +23,7 @@ Re = 100
 
 p_lagrange = 0.
 p_smooth = 0.5
-p_wave = 0.
+p_wave = 0.5
 
 # ---------------------------------------
 # Wz, Psi e velocidade inicial

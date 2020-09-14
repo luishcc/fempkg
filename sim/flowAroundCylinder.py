@@ -24,7 +24,7 @@ from timeit import default_timer as timer
 time_start = timer()
 cwd = os.getcwd()
 
-msh_file = "vivTest"
+msh_file = "vivG"
 sim_case = 'flowAroundCylinder'
 sim_type='fixed'
 #sim_type='moving'
@@ -58,7 +58,7 @@ vtk_steps = 1
 
 Re = 300
 v_in = 1
-psi_top = 10
+psi_top = max(y)
 
 p_lagrange = 0.0
 p_smooth = 0.0
