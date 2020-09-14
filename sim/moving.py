@@ -116,8 +116,6 @@ vy = np.zeros(NN, dtype="float64")
 
 time_start_assembly = timer()
 
-# K, M, Gx, Gy = fem_matrix(x, y, num_ele, nodes, ien) # No Cython
-K, M, Gx, Gy = fem_matrix(mesh)
 
 time_end_assembly = timer()
 print("First assemble in: ", time_end_assembly - time_start_assembly)
@@ -166,14 +164,6 @@ num_bc = len(mesh.boundary_nodes)
 #Wz_old = sp.dot(Minv, (sp.dot(Gx, vy) - sp.dot(Gy, vx))) * omega_null_bc
 Wz_old = np.zeros(NN)
 
-
-K_psi, psi_bc_RHS = apply_bc_dirichlet(K, mesh, psi_dirichlet_nodes,
-                                        psi_bc_value)
-F_psi = np.dot(M, Wz_old) + psi_bc_RHS
-for i in psi_dirichlet_nodes:
-    F_psi[i] = psi_bc_value[i]
-
-Psi_old = sp.linalg.solve(K_psi, F_psi)
 
 time_end_bc = timer()
 print("Boundary and initial conitions: ", time_end_bc - time_start_bc)
@@ -232,14 +222,11 @@ for t in range(0, int(steps/vtk_steps)):
         vxAle = vx - vx_mesh
         vyAle = vy - vy_mesh
 
-        Wz_dep = sl.Linear2D(NN, mesh.neighbour_elements, ien, x, y, vxAle,
-                                vyAle, dt, Wz_old)
+
 
         # Wz , Psi Solution
 
-        K, M, Gx, Gy = fem_matrix(mesh)
 
-        Minv = linalg.inv(M)
 
         time_end_ale = timer()
         print("ALE step time: ", time_end_ale - time_start_ale)
@@ -248,34 +235,15 @@ for t in range(0, int(steps/vtk_steps)):
         time_start_wz = timer()
 
         # B.C. Vorticity
-        omega_bc_value = np.dot(Minv, (np.dot(Gx, vy) - np.dot(Gy, vx))) * omega_null_bc
 
 
-        # Solve vorticity Transport
-        LHS = M / dt + K / Re
-        LHS_omega, omega_bc_RHS = apply_bc_dirichlet(LHS, mesh,
-                                                     mesh.boundary_nodes,
-                                                     omega_bc_value)
 
-        F_omega = np.dot(M / dt, Wz_dep) + omega_bc_RHS
-        for i in mesh.boundary_nodes:
-            F_omega[i] = omega_bc_value[i]
-
-        Wz_new = sp.linalg.solve(LHS_omega, F_omega)
 
         time_end_wz = timer()
         print("Omega solution time: ", time_end_wz - time_start_wz)
 
         # Solve Stream Function
-        time_start_psi = timer()
-        K_psi, psi_bc_RHS = apply_bc_dirichlet(K, mesh, psi_dirichlet_nodes,
-                                                psi_bc_value)
-        F_psi = np.dot(M, Wz_new) + psi_bc_RHS
-        for i in psi_dirichlet_nodes:
-            F_psi[i] = psi_bc_value[i]
-        Psi_new = sp.linalg.solve(K_psi, F_psi)
-        time_end_psi = timer()
-        print("Psi solution time: ", time_end_psi - time_start_psi)
+
 
 
         # Check for steady state with vorticity solution
@@ -285,26 +253,11 @@ for t in range(0, int(steps/vtk_steps)):
         #     exit()
 
         # Saving last step solution
-        Psi_old = np.copy(Psi_new)
-        Wz_old = np.copy(Wz_new)
 
         # Calculate Vx e Vy
     #    vx = sp.dot(Minv, sp.dot(Gy, Psi_new))
     #    vy = -1.0 * sp.dot(Minv, sp.dot(Gx, Psi_new))
-        vx = sp.linalg.solve(M, np.dot(Gy, Psi_new))
-        vy = -1.0 * sp.linalg.solve(M, np.dot(Gx, Psi_new))
-        # Setting velocity BC
-        for i in mesh.boundary_nodes:
-            if i in mesh.get_boundary_with_name('inlet'):
-                vx[i] = v_in
-                vy[i] = 0
-            if i in mesh.get_boundary_with_name('top') or \
-               i in mesh.get_boundary_with_name('bot'):
-                vx[i] = v_in
-                vy[i] = 0
-            if i in cylinder_nodes:
-                vx[i] = 0
-                vy[i] = cyl_vel
+
 
         time_end_loop = timer()
         time_avg_loop += time_end_loop - time_start_loop
@@ -313,7 +266,7 @@ for t in range(0, int(steps/vtk_steps)):
                 (time_end_loop - time_start_loop)* (steps-t+1) )
 
     # Save VTK
-    vtk = io.InOut(x, y, ien, len(x), len(ien), Psi_old, Wz_old, Wz_dep,
+    vtk = io.InOut(x, y, ien, len(x), len(ien), None, None, None,
                     None, None, vx, vy, vxAle, vyAle)
     vtk.saveVTK(vtk_path,  'vtk'+str(iter))
     vtk.saveVTK(vtk_path, 'last')

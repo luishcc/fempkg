@@ -46,21 +46,45 @@ for t in range(5):
     error[2,t] = np.sqrt(np.square(list(s['Velocity:0'])- va).sum()) /n
 
 
+ss = pd.read_csv('line.csv')
+l_y = list(ss['Points:1'])
+l_x = list(ss['Points:0'])
+l_v = list(ss['Velocity:0'])
+l_w = list(ss['Omega'])
+l_p = list(ss['Psi'])
+
+l_wa, l_pa, l_va = get_analytic(l_x, l_y)
+
 linx = np.linspace(0.05,0.8,100)
 liny = np.zeros(100)
 linx2 = np.linspace(0.05,0.8,100)
 liny2 = np.zeros(100)
 for i in range(100):
-	liny[i] = 0.8*linx[i]**2
-	liny2[i] = 2*linx2[i]
+	liny[i] = 0.03*linx[i]**2
+	liny2[i] = 0.08*linx2[i]
+
+
+# name = 'Vorticity'
+# name = 'Velocity'
+name = 'Stream Function'
 
 plt.figure(1)
-plt.loglog(h, error[2], 'k-', marker='o', label = 'Numeric')
+plt.loglog(h, error[1], 'k-', marker='o', label = 'Numeric')
 plt.loglog(linx, liny, 'k--', label ='Quadratic')
 plt.loglog(linx2, liny2, 'k-',label ='Linear')
 plt.grid('on')
-plt.title('Vorticity Convergence Rate')
+plt.title(name+' Convergence Rate')
 plt.ylabel('Error')
 plt.xlabel(r'$h$')
 plt.legend(loc='0')
+
+plt.figure(2)
+plt.plot(l_y, l_pa, 'k-', linewidth=0.8, label ='Analytic')
+plt.plot(l_y, l_p, 'kx', markersize=3.2, label = 'Numeric')
+plt.grid('on')
+plt.title(name+' Profile')
+plt.ylabel(name)
+plt.xlabel(r'$y$')
+plt.legend(loc='0')
+
 plt.show()

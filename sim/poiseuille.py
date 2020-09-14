@@ -75,7 +75,7 @@ rt_save.sim_info_files(results_path, param)
 
 Psi_new = np.zeros(NN, dtype="float64")
 Wz_new = np.zeros(NN, dtype="float64")
-vx = np.zeros(NN, dtype="float64")
+vx = np.zeros(NN, dtype="float64")+1
 vy = np.zeros(NN, dtype="float64")
 
 vx_a = np.zeros(NN, dtype="float64")
