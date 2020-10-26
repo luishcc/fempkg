@@ -2,9 +2,9 @@
 
 import os
 
-#os.environ["MKL_NUM_THREADS"] = "3"
-#os.environ["NUMEXPR_NUM_THREADS"] = "3"
-#os.environ["OMP_NUM_THREADS"] = "3"
+os.environ["MKL_NUM_THREADS"] = "1"
+os.environ["NUMEXPR_NUM_THREADS"] = "1"
+os.environ["OMP_NUM_THREADS"] = "1"
 
 import scipy as sp
 import numpy as np
@@ -24,7 +24,7 @@ from timeit import default_timer as timer
 time_start = timer()
 cwd = os.getcwd()
 
-msh_file = "vivG"
+msh_file = "vivC"
 sim_case = 'flowAroundCylinder'
 sim_type='fixed'
 #sim_type='moving'
@@ -53,10 +53,10 @@ time_end_read = timer()
 print("Read .msh in: ", time_end_read - time_start_read)
 
 dt = 0.05
-steps = 2000
+steps = 5000
 vtk_steps = 1
 
-Re = 300
+Re = 80
 v_in = 1
 psi_top = max(y)
 
