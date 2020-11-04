@@ -25,7 +25,7 @@ time_start = timer()
 cwd = os.getcwd()
 
 msh_file = "vivC"
-sim_case = 'flowAroundCylinder'
+sim_case = 'moveTest'
 #sim_type='fixed'
 sim_type='moving'
 
@@ -52,9 +52,9 @@ time_end_read = timer()
 
 print("Read .msh in: ", time_end_read - time_start_read)
 
-dt = 0.05
-steps = 2000
-vtk_steps = 1
+dt = 0.01
+steps = 10000
+vtk_steps = 5
 
 Re = 300
 v_in = 1
@@ -185,7 +185,7 @@ for t in range(0, int(steps/vtk_steps)):
 
         cyl_vel = 0
         y, cylinder_center, cyl_vel = move_cylinder(cylinder_nodes, x,
-                                                    y, 0.3, 0.1, iter*dt, dt)
+                                                    y, 0.25, 0.1, iter*dt, dt)
         # cylinder_center, cyl_vel = move_cylinder2(cylinder, x,
         #                                           y, 0.3, 16, t*dt, dt)
         for i in cylinder_nodes:
@@ -222,41 +222,6 @@ for t in range(0, int(steps/vtk_steps)):
         vxAle = vx - vx_mesh
         vyAle = vy - vy_mesh
 
-
-
-        # Wz , Psi Solution
-
-
-
-        time_end_ale = timer()
-        print("ALE step time: ", time_end_ale - time_start_ale)
-
-
-        time_start_wz = timer()
-
-        # B.C. Vorticity
-
-
-
-
-        time_end_wz = timer()
-        print("Omega solution time: ", time_end_wz - time_start_wz)
-
-        # Solve Stream Function
-
-
-
-        # Check for steady state with vorticity solution
-        # err = Wz_new - Wz_old
-        # err = np.sqrt(np.dot(err,err))
-        # if err < 1e-8:
-        #     exit()
-
-        # Saving last step solution
-
-        # Calculate Vx e Vy
-    #    vx = sp.dot(Minv, sp.dot(Gy, Psi_new))
-    #    vy = -1.0 * sp.dot(Minv, sp.dot(Gx, Psi_new))
 
 
         time_end_loop = timer()

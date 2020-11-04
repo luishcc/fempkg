@@ -256,7 +256,7 @@ for t in range(0, int(steps/vtk_steps)):
                                                      mesh.boundary_nodes,
                                                      omega_bc_value)
 
-        F_omega = np.dot(M / dt, Wz_dep) + omega_bc_RHS/Re
+        F_omega = np.dot(M / dt, Wz_dep) + omega_bc_RHS #/Re
         for i in mesh.boundary_nodes:
             F_omega[i] = omega_bc_value[i]
 
