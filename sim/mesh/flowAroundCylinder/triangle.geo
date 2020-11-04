@@ -1,4 +1,4 @@
-scale = 1;
+scale = 0.6;
 
 Point(1) = {0, 0, 0, 1.5*scale};
 Point(2) = {0, 10, 0, 1.5*scale};
@@ -12,16 +12,20 @@ Line(3) = {3, 4};
 Line(4) = {4, 5};
 Line(5) = {5, 1};
 
-Point(6) = {12.5, 5, 0, 0.1*scale};
-Point(7) = {13, 5, 0, 0.1*scale};
 
-Line(10) = {7, 4};
+Point(6) = {12.21, 4.5, 0, 0.1*scale};
+Point(7) = {12.21, 5.5, 0, 0.1*scale};
+Point(8) = {13.08, 5, 0, 0.1*scale};
+
+Line(6) = {6, 7};
+Line(7) = {7, 8};
+Line(8) = {8, 6};
 
 
-Circle(6) = {7, 6, 7};
+Line(10) = {8, 4};
 
 Line Loop(1) = {2, 3, 4, 5, 1};
-Line Loop(2) = {6};
+Line Loop(2) = {6, 7, 8};
 Plane Surface(1) = {1, 2};
 
 Field[1] = Attractor;
@@ -39,6 +43,6 @@ Physical Line("inlet") = {1};
 Physical Line("outlet") = {3, 4};
 Physical Line("top") = {2};
 Physical Line("bot") = {5};
-Physical Line("cylinder") = {6};
+Physical Line("cylinder") = {6, 7, 8};
 
 Physical Surface(6) = {1};
