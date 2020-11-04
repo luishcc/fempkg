@@ -46,6 +46,6 @@ Physical Line("inlet") = {1};
 Physical Line("outlet") = {3, 4};
 Physical Line("top") = {2};
 Physical Line("bot") = {5};
-Physical Line("cylinder") = {6};
+Physical Line("cylinder") = {6,7,8,9};
 
 Physical Surface(6) = {1};
