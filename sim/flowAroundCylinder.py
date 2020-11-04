@@ -2,9 +2,9 @@
 
 import os
 
-os.environ["MKL_NUM_THREADS"] = "1"
-os.environ["NUMEXPR_NUM_THREADS"] = "1"
-os.environ["OMP_NUM_THREADS"] = "1"
+#os.environ["MKL_NUM_THREADS"] = "1"
+#os.environ["NUMEXPR_NUM_THREADS"] = "1"
+#os.environ["OMP_NUM_THREADS"] = "1"
 
 import scipy as sp
 import numpy as np
@@ -24,7 +24,7 @@ from timeit import default_timer as timer
 time_start = timer()
 cwd = os.getcwd()
 
-msh_file = "vivC"
+msh_file = "vivS"
 sim_case = 'flowAroundCylinder'
 sim_type='fixed'
 #sim_type='moving'
@@ -56,7 +56,7 @@ dt = 0.05
 steps = 5000
 vtk_steps = 1
 
-Re = 80
+Re = 120
 v_in = 1
 psi_top = max(y)
 
@@ -105,7 +105,7 @@ def  move_cylinder2(_nodes, _y, _y_max, _f_0, _t, _dt):
 
 Psi_new = np.zeros(NN, dtype="float64")
 Wz_new = np.zeros(NN, dtype="float64")
-vx = np.zeros(NN, dtype="float64")
+vx = np.zeros(NN, dtype="float64") + v_in
 vy = np.zeros(NN, dtype="float64")
 
 # ---------------------------------------
@@ -160,9 +160,9 @@ for i in mesh.get_boundary_with_name('inlet'):
 num_bc = len(mesh.boundary_nodes)
 
 
-#Minv = sp.linalg.inv(M)
-#Wz_old = sp.dot(Minv, (sp.dot(Gx, vy) - sp.dot(Gy, vx))) * omega_null_bc
-Wz_old = np.zeros(NN)
+Minv = sp.linalg.inv(M)
+Wz_old = sp.dot(Minv, (sp.dot(Gx, vy) - sp.dot(Gy, vx))) * omega_null_bc
+#Wz_old = np.zeros(NN)
 
 
 K_psi, psi_bc_RHS = apply_bc_dirichlet(K, mesh, psi_dirichlet_nodes,
@@ -256,7 +256,7 @@ for t in range(0, int(steps/vtk_steps)):
                                                      mesh.boundary_nodes,
                                                      omega_bc_value)
 
-        F_omega = np.dot(M / dt, Wz_dep) + omega_bc_RHS #/Re
+        F_omega = np.dot(M / dt, Wz_dep) + omega_bc_RHS /Re
         for i in mesh.boundary_nodes:
             F_omega[i] = omega_bc_value[i]
 

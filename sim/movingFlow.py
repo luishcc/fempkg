@@ -24,7 +24,7 @@ from timeit import default_timer as timer
 time_start = timer()
 cwd = os.getcwd()
 
-msh_file = "vivC"
+msh_file = "vivS2"
 sim_case = 'flowAroundCylinder'
 #sim_type='fixed'
 sim_type='moving'
@@ -53,10 +53,10 @@ time_end_read = timer()
 print("Read .msh in: ", time_end_read - time_start_read)
 
 dt = 0.05
-steps = 2000
+steps = 5000
 vtk_steps = 1
 
-Re = 300
+Re = 120
 v_in = 1
 psi_top = max(y)
 
@@ -76,7 +76,7 @@ rt_save.sim_info_files(results_path, param)
 
 def set_mesh_velocity(_y, _x, _vel_c, _center):
     size = len(_y)
-    _vv = sp.zeros(size)
+    _vv = np.zeros(size)
     for i in  range(size):
         d = -1*np.sqrt((_x[i]-_center[0])**2 + (_y[i]-_center[1])**2)
         _vv[i] = (_vel_c +_vel_c*np.exp(-5))*np.exp(d) - _vel_c*np.exp(-5)
@@ -107,7 +107,7 @@ def  move_cylinder2(_nodes, _x, _y, _y_max, _f_0, _t, _dt):
 
 Psi_new = np.zeros(NN, dtype="float64")
 Wz_new = np.zeros(NN, dtype="float64")
-vx = np.zeros(NN, dtype="float64")
+vx = np.zeros(NN, dtype="float64") #+ v_in
 vy = np.zeros(NN, dtype="float64")
 
 # ---------------------------------------
@@ -163,7 +163,7 @@ num_bc = len(mesh.boundary_nodes)
 
 
 #Minv = sp.linalg.inv(M)
-#Wz_old = sp.dot(Minv, (sp.dot(Gx, vy) - sp.dot(Gy, vx))) * omega_null_bc
+#Wz_old = np.dot(Minv, (np.dot(Gx, vy) - np.dot(Gy, vx))) * omega_null_bc
 Wz_old = np.zeros(NN)
 
 
@@ -195,11 +195,11 @@ for t in range(0, int(steps/vtk_steps)):
 
         cyl_vel = 0
         y, cylinder_center, cyl_vel = move_cylinder(cylinder_nodes, x,
-                                                    y, 0.3, 0.1, iter*dt, dt)
+                                                    y, 0.25, 0.1, iter*dt, dt)
         # cylinder_center, cyl_vel = move_cylinder2(cylinder, x,
         #                                           y, 0.3, 16, t*dt, dt)
         for i in cylinder_nodes:
-            psi_bc_value[i] = 0.1 * cylinder_center[1]
+            psi_bc_value[i] = cylinder_center[1]
         vy_exp = set_mesh_velocity(y, x, cyl_vel, cylinder_center)
 
         time_start_smooth = timer()
@@ -219,7 +219,7 @@ for t in range(0, int(steps/vtk_steps)):
 
             if i in cylinder_nodes:
                 vx[i] = 0
-                vy[i] = 0
+                #vy[i] = 0
                 vy[i] = cyl_vel
                 vy_mesh[i] = cyl_vel
                 v_c[i] = cyl_vel
@@ -257,7 +257,7 @@ for t in range(0, int(steps/vtk_steps)):
                                                      mesh.boundary_nodes,
                                                      omega_bc_value)
 
-        F_omega = np.dot(M / dt, Wz_dep) + omega_bc_RHS
+        F_omega = np.dot(M / dt, Wz_dep) + omega_bc_RHS /Re
         for i in mesh.boundary_nodes:
             F_omega[i] = omega_bc_value[i]
 

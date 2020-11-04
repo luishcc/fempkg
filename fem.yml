@@ -6,7 +6,6 @@ dependencies:
   - setuptools
   - matplotlib
   - pandas
-  - pip3
   - pip:
     - Flask-Testing
     - meshio

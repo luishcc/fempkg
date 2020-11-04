@@ -24,7 +24,7 @@ from timeit import default_timer as timer
 time_start = timer()
 cwd = os.getcwd()
 
-msh_file = "vivC"
+msh_file = "vivS"
 sim_case = 'moveTest'
 #sim_type='fixed'
 sim_type='moving'
