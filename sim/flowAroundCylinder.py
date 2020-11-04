@@ -118,7 +118,7 @@ if start_from_file:
     vx = temp_file.point_data['Velocity'][:,0]
     vy = temp_file.point_data['Velocity'][:,1]
     Psi_new = temp_file.point_data['Psi'][:,0]
-    vx = temp_file.point_data['Omega'][:,0]
+    Wz_old = temp_file.point_data['Omega'][:,0]
 
 # ---------------------------------------
 # Matrices Assembly
@@ -172,8 +172,8 @@ for i in mesh.get_boundary_with_name('inlet'):
 num_bc = len(mesh.boundary_nodes)
 
 
-Minv = sp.linalg.inv(M)
-Wz_old = sp.dot(Minv, (sp.dot(Gx, vy) - sp.dot(Gy, vx))) * omega_null_bc
+#Minv = sp.linalg.inv(M)
+#Wz_old = sp.dot(Minv, (sp.dot(Gx, vy) - sp.dot(Gy, vx))) * omega_null_bc
 #Wz_old = np.zeros(NN)
 
 
