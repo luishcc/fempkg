@@ -24,7 +24,11 @@ from timeit import default_timer as timer
 time_start = timer()
 cwd = os.getcwd()
 
-msh_file = "vivS"
+start_file = 'last.vtk'
+start_from_file = True
+#start_from_file = False
+
+msh_file = "vivC"
 sim_case = 'flowAroundCylinder'
 sim_type='fixed'
 #sim_type='moving'
@@ -52,7 +56,7 @@ time_end_read = timer()
 
 print("Read .msh in: ", time_end_read - time_start_read)
 
-dt = 0.05
+dt = 0.01
 steps = 5000
 vtk_steps = 1
 
@@ -105,8 +109,16 @@ def  move_cylinder2(_nodes, _y, _y_max, _f_0, _t, _dt):
 
 Psi_new = np.zeros(NN, dtype="float64")
 Wz_new = np.zeros(NN, dtype="float64")
-vx = np.zeros(NN, dtype="float64") + v_in
+vx = np.zeros(NN, dtype="float64")
 vy = np.zeros(NN, dtype="float64")
+
+if start_from_file:
+    import meshio
+    temp_file = meshio.read(start_file)
+    vx = temp_file.point_data['Velocity'][:,0]
+    vy = temp_file.point_data['Velocity'][:,1]
+    Psi_new = temp_file.point_data['Psi']
+    vx = temp_file.point_data['Omega']
 
 # ---------------------------------------
 # Matrices Assembly

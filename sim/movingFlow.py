@@ -24,6 +24,11 @@ from timeit import default_timer as timer
 time_start = timer()
 cwd = os.getcwd()
 
+start_file = 'last.vtk'
+#start_from_file = True
+start_from_file = False
+
+
 msh_file = "vivS2"
 sim_case = 'flowAroundCylinder'
 #sim_type='fixed'
@@ -110,6 +115,14 @@ Wz_new = np.zeros(NN, dtype="float64")
 vx = np.zeros(NN, dtype="float64") #+ v_in
 vy = np.zeros(NN, dtype="float64")
 
+
+if start_from_file:
+    import meshio
+    temp_file = meshio.read(start_file)
+    vx = temp_file.point_data['Velocity'][:,0]
+    vy = temp_file.point_data['Velocity'][:,1]
+    Psi_new = temp_file.point_data['Psi']
+    vx = temp_file.point_data['Omega']
 # ---------------------------------------
 # Matrices Assembly
 # ---------------------------------------
