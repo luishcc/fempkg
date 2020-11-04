@@ -121,8 +121,8 @@ if start_from_file:
     temp_file = meshio.read(start_file)
     vx = temp_file.point_data['Velocity'][:,0]
     vy = temp_file.point_data['Velocity'][:,1]
-    Psi_new = temp_file.point_data['Psi']
-    vx = temp_file.point_data['Omega']
+    Psi_new = temp_file.point_data['Psi'][:,0]
+    vx = temp_file.point_data['Omega'][:,0]
 # ---------------------------------------
 # Matrices Assembly
 # ---------------------------------------
