@@ -300,10 +300,8 @@ for t in range(0, int(steps/vtk_steps)):
         Wz_old = np.copy(Wz_new)
 
         # Calculate Vx e Vy
-    #    vx = sp.dot(Minv, sp.dot(Gy, Psi_new))
-    #    vy = -1.0 * sp.dot(Minv, sp.dot(Gx, Psi_new))
-        vx = sp.linalg.solve(M, np.dot(Gy, Psi_new))
-        vy = -1.0 * sp.linalg.solve(M, np.dot(Gx, Psi_new))
+        # vx = sp.linalg.solve(M, np.dot(Gy, Psi_new))
+        # vy = -1.0 * sp.linalg.solve(M, np.dot(Gx, Psi_new))
         # Setting velocity BC
         for i in mesh.boundary_nodes:
             if i in mesh.get_boundary_with_name('inlet'):
@@ -316,6 +314,19 @@ for t in range(0, int(steps/vtk_steps)):
             if i in cylinder_nodes:
                 vx[i] = 0
                 vy[i] = cyl_vel
+
+        LHS_vx, BC_vx = apply_bc_dirichlet(M, mesh, psi_dirichlet_nodes, vx)
+        LHS_vy, BC_vy = apply_bc_dirichlet(M, mesh, psi_dirichlet_nodes, vy)
+        F_vy = np.dot(Gx, psi) + BC_vy
+        F_vx = np.dot(Gy, psi) + BC_vx
+        for i in psi_dirichlet_nodes:
+            F_vx[i] = vx[i]
+            F_vy[i] = vy[i]
+        vx = sp.linalg.solve(LHS_vx, F_vx)
+        vy = -1*sp.linalg.solve(LHS_vy, F_vy)
+
+        
+
 
         time_end_loop = timer()
         time_avg_loop += time_end_loop - time_start_loop
