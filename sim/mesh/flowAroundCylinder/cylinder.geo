@@ -1,7 +1,7 @@
-scale = 0.6;
+scale = 0.25;
 
-Point(1) = {0, 0, 0, 2.5*scale};
-Point(2) = {0, 10, 0, 2.5*scale};
+Point(1) = {0, 0, 0, 3*scale};
+Point(2) = {0, 10, 0, 3*scale};
 Point(3) = {32.5, 10, 0, 1.5*scale};
 Point(4) = {32.5, 5, 0, 1.0*scale};
 Point(5) = {32.5, 0, 0, 1.5*scale};
@@ -29,10 +29,10 @@ Field[1].EdgesList = {10};
 
 Field[2] = Threshold;
 Field[2].IField = 1;
-Field[2].LcMin = 0.2*scale;
-Field[2].LcMax = 0.8*scale;
-Field[2].DistMin = 0.75;
-Field[2].DistMax = 5;
+Field[2].LcMin = 0.4*scale;
+Field[2].LcMax = 1.2*scale;
+Field[2].DistMin = 0.5;
+Field[2].DistMax = 4.5;
 Background Field = 2;
 
 Physical Line("inlet") = {1};
