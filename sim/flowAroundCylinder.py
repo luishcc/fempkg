@@ -2,9 +2,9 @@
 
 import os
 
-#os.environ["MKL_NUM_THREADS"] = "1"
-#os.environ["NUMEXPR_NUM_THREADS"] = "1"
-#os.environ["OMP_NUM_THREADS"] = "1"
+os.environ["MKL_NUM_THREADS"] = "5"
+os.environ["NUMEXPR_NUM_THREADS"] = "5"
+os.environ["OMP_NUM_THREADS"] = "5"
 
 import scipy as sp
 import numpy as np
@@ -24,11 +24,11 @@ from timeit import default_timer as timer
 time_start = timer()
 cwd = os.getcwd()
 
-start_file = 'last.vtk'
-start_from_file = True
-#start_from_file = False
+#start_file = 'last.vtk'
+#start_from_file = True
+start_from_file = False
 
-msh_file = "vivC"
+msh_file = "cylinder"
 sim_case = 'flowAroundCylinder'
 sim_type='fixed'
 #sim_type='moving'
@@ -56,8 +56,8 @@ time_end_read = timer()
 
 print("Read .msh in: ", time_end_read - time_start_read)
 
-dt = 0.01
-steps = 5000
+dt = 0.05
+steps = 10000
 vtk_steps = 1
 
 Re = 120
@@ -174,7 +174,7 @@ num_bc = len(mesh.boundary_nodes)
 
 #Minv = sp.linalg.inv(M)
 #Wz_old = sp.dot(Minv, (sp.dot(Gx, vy) - sp.dot(Gy, vx))) * omega_null_bc
-#Wz_old = np.zeros(NN)
+Wz_old = np.zeros(NN)
 
 
 K_psi, psi_bc_RHS = apply_bc_dirichlet(K, mesh, psi_dirichlet_nodes,
@@ -196,9 +196,15 @@ print("Boundary and initial conitions: ", time_end_bc - time_start_bc)
 v_c = np.zeros(NN)
 time_avg_loop = 0
 iter = 0
+
+
 for t in range(0, int(steps/vtk_steps)):
+    #noise = sp.random.rand(NN)* v_in * 0.0005
     for tt in range(vtk_steps):
         iter += 1
+    #    if iter <=20:
+    #        vy = vy * noise
+    #        vx = vx * noise
         time_start_loop = timer()
         print()
         print("Solving System " + str((float(iter)/(steps-1))*100) + "%")
@@ -317,15 +323,15 @@ for t in range(0, int(steps/vtk_steps)):
 
         LHS_vx, BC_vx = apply_bc_dirichlet(M, mesh, psi_dirichlet_nodes, vx)
         LHS_vy, BC_vy = apply_bc_dirichlet(M, mesh, psi_dirichlet_nodes, vy)
-        F_vy = np.dot(Gx, psi) + BC_vy
-        F_vx = np.dot(Gy, psi) + BC_vx
+        F_vy = np.dot(Gx, Psi_new) + BC_vy
+        F_vx = np.dot(Gy, Psi_new) + BC_vx
         for i in psi_dirichlet_nodes:
             F_vx[i] = vx[i]
             F_vy[i] = vy[i]
         vx = sp.linalg.solve(LHS_vx, F_vx)
         vy = -1*sp.linalg.solve(LHS_vy, F_vy)
 
-        
+
 
 
         time_end_loop = timer()

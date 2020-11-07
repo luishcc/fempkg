@@ -2,9 +2,9 @@
 
 import os
 
-#os.environ["MKL_NUM_THREADS"] = "3"
-#os.environ["NUMEXPR_NUM_THREADS"] = "3"
-#os.environ["OMP_NUM_THREADS"] = "3"
+os.environ["MKL_NUM_THREADS"] = "5"
+os.environ["NUMEXPR_NUM_THREADS"] = "5"
+os.environ["OMP_NUM_THREADS"] = "5"
 
 import scipy as sp
 import numpy as np
@@ -24,12 +24,12 @@ from timeit import default_timer as timer
 time_start = timer()
 cwd = os.getcwd()
 
-start_file = 'last.vtk'
+#start_file = 'last.vtk'
 #start_from_file = True
 start_from_file = False
 
 
-msh_file = "vivS2"
+msh_file = "cylinder"
 sim_case = 'flowAroundCylinder'
 #sim_type='fixed'
 sim_type='moving'
@@ -58,16 +58,16 @@ time_end_read = timer()
 print("Read .msh in: ", time_end_read - time_start_read)
 
 dt = 0.05
-steps = 5000
+steps = 10000
 vtk_steps = 1
 
-Re = 120
+Re = 100
 v_in = 1
 psi_top = max(y)
 
 p_lagrange = 0.0
-p_smooth = 0.6
-p_exp = 1.5
+p_smooth = 0.4
+p_exp = 1.6
 
 param = {'Re':Re, 'dt':dt, 'Steps':steps, 'p_lagrange':p_lagrange, \
             'p_smooth':p_smooth, 'p_exp':p_exp ,\
@@ -112,7 +112,7 @@ def  move_cylinder2(_nodes, _x, _y, _y_max, _f_0, _t, _dt):
 
 Psi_new = np.zeros(NN, dtype="float64")
 Wz_new = np.zeros(NN, dtype="float64")
-vx = np.zeros(NN, dtype="float64") #+ v_in
+vx = np.zeros(NN, dtype="float64")
 vy = np.zeros(NN, dtype="float64")
 
 
@@ -304,8 +304,8 @@ for t in range(0, int(steps/vtk_steps)):
         # Calculate Vx e Vy
     #    vx = sp.dot(Minv, sp.dot(Gy, Psi_new))
     #    vy = -1.0 * sp.dot(Minv, sp.dot(Gx, Psi_new))
-        vx = sp.linalg.solve(M, np.dot(Gy, Psi_new))
-        vy = -1.0 * sp.linalg.solve(M, np.dot(Gx, Psi_new))
+        # vx = sp.linalg.solve(M, np.dot(Gy, Psi_new))
+        # vy = -1.0 * sp.linalg.solve(M, np.dot(Gx, Psi_new))
         # Setting velocity BC
         for i in mesh.boundary_nodes:
             if i in mesh.get_boundary_with_name('inlet'):
@@ -318,6 +318,16 @@ for t in range(0, int(steps/vtk_steps)):
             if i in cylinder_nodes:
                 vx[i] = 0
                 vy[i] = cyl_vel
+
+        LHS_vx, BC_vx = apply_bc_dirichlet(M, mesh, psi_dirichlet_nodes, vx)
+        LHS_vy, BC_vy = apply_bc_dirichlet(M, mesh, psi_dirichlet_nodes, vy)
+        F_vy = np.dot(Gx, Psi_new) + BC_vy
+        F_vx = np.dot(Gy, Psi_new) + BC_vx
+        for i in psi_dirichlet_nodes:
+            F_vx[i] = vx[i]
+            F_vy[i] = vy[i]
+        vx = sp.linalg.solve(LHS_vx, F_vx)
+        vy = -1*sp.linalg.solve(LHS_vy, F_vy)
 
         time_end_loop = timer()
         time_avg_loop += time_end_loop - time_start_loop

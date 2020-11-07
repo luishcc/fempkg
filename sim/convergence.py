@@ -91,6 +91,7 @@ def solve(mesh):
     vx = sp.linalg.solve(M, np.dot(Gy, psi))
 
     wz = sp.linalg.solve(M, (- np.dot(Gy, vx)))
+    wz = - np.dot(Gy, vx)
 
     err_vx = vx - vx_a
     err_vx = np.sqrt(np.dot(err_vx,err_vx))
@@ -98,12 +99,19 @@ def solve(mesh):
     err_psi = psi - psi_a
     err_psi = np.sqrt(np.dot(err_psi, err_psi))
 
-    err_w = wz - w_a
+    # err_w = wz - w_a
+    # err_w = np.sqrt(np.dot(err_w, err_w))
+
+    err_w = np.zeros(num_bc)
+    for i in range(num_bc):
+        id = mesh.boundary_nodes[i]
+        err_w[id] = wz[id] - w_a[id]
     err_w = np.sqrt(np.dot(err_w, err_w))
 
     print(err_vx, err_psi, np.sqrt( (4 * (5./NE)) / np.sqrt(3)))
     return err_vx/NE, err_psi/NE, np.sqrt( (4 * (5./NE)) / np.sqrt(3) ), err_w/NE
     # return err_vx/NE, err_psi/NE, np.sqrt(5./NE), err_w/NE
+    # return err_vx, err_psi, NE, err_w
     # return err_vx/NE, err_psi/NE, 5./NE, err_w/NE
     # return err_vx/NE, err_psi/NE, np.sqrt( (5./NE) /(3* np.sqrt(3)) ), err_w/NE
 
@@ -124,8 +132,8 @@ liny = np.zeros(100)
 linx2 = np.linspace(0.03,0.5,100)
 liny2 = np.zeros(100)
 for i in range(100):
-	liny[i] = 0.3*linx[i]**2
-	liny2[i] = 0.8*linx2[i]
+	liny[i] = 0.3*linx[i]**2.6
+	liny2[i] = 0.8*linx2[i]**1.4
 
 # A = area_t / NE
 # r = np.sqrt( A / (3*np.sqrt(3)))
@@ -167,8 +175,8 @@ plt.legend()
 
 plt.figure(3)
 plt.loglog(ar, e_w, 'k-', marker='o', label = 'Numeric')
-plt.loglog(linx, liny*10, 'k--', label ='Quadratic')
-plt.loglog(linx2, liny2*10, 'k-',label ='Linear')
+plt.loglog(linx, liny*1, 'k--', label ='Quadratic')
+plt.loglog(linx2, liny2*10*0.5, 'k-',label ='Linear')
 plt.grid('on')
 plt.title('Vorticity Convergence Rate')
 plt.ylabel('Error')
