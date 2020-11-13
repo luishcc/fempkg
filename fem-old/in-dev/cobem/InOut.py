@@ -121,17 +121,7 @@ class InOut:
 
   _file.write( "\n" )
 
- def printMeshReport(_self):
-  """
-   Print mesh report for lineMesh and Mesh
-  """
-  print ""
-  print ""
-  print "|" + "-"*30 + " Mesh Report " + "-"*30 + "|"
-  print " "*5 + "number of 2D points (numVerts):          " + \
-        str(_self.numVerts)
-  print " "*5 + "number of triangles (numElems):          " + \
-        str(_self.numElems)
+
 #--------------------------------------------------
 #   print ""
 #   for nb in range(0,_self.mesh.elemIdRegion.max()+1):
@@ -140,8 +130,5 @@ class InOut:
 #         str(_self.mesh.averageEdgeLength)
 #-------------------------------------------------- 
 
-  print "|" + "-"*73 + "|"
-  print ""
-  print ""
 
      

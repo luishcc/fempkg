@@ -12,7 +12,7 @@ cwd = os.getcwd()
 #     Reading Mesh
 # -------------------------------------------------------
 
-mesh_file = "zalesak-coarse"
+mesh_file = "zalesak2"
 
 fluid_mesh = gm.GMesh("mesh/" + mesh_file + ".msh")
 
@@ -29,7 +29,7 @@ num_ele = len(ien)
 
 
 omega = 0.5
-iterations = 1000
+iterations = 100
 time = (sp.pi*2) / omega
 dt = (1./iterations) * time
 
@@ -59,12 +59,12 @@ for i in range(nodes):
     if (x[i] - Cx)**2 + (y[i] - Cy)**2 > R**2:
         zk[i] = 0
 
-print "neighbour"
+print("neighbour")
 neighbour = sl.neighbourElements(nodes, ien)
 
 for t in range(iterations):
 
-    print t, " / ", time
+    print( t, " / ", time)
     zk_new = sl.Linear2D(nodes, neighbour, ien, x, y, vx, vy, dt, zk)
 
     # Salvar VTK

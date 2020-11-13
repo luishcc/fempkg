@@ -20,7 +20,7 @@ def neighbourElements(_np, _ien):
 
 # Search for points _xd in all elements from element 0
 def search1D(_np, _ne, _ien, _x, _xd, order='1'):
-    print "searching element 1D with order = ", order
+
 
     result = sp.zeros(_np)
     area_coord = sp.zeros((_np,2))
