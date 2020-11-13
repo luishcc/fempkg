@@ -24,7 +24,7 @@ from timeit import default_timer as timer
 time_start = timer()
 cwd = os.getcwd()
 
-start_file = 'last-200fine01'
+start_file = '120fine01'
 start_from_file = True
 #start_from_file = False
 
