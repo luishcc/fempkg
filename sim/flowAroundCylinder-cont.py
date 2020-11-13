@@ -24,7 +24,7 @@ from timeit import default_timer as timer
 time_start = timer()
 cwd = os.getcwd()
 
-start_file = 'last-200fine01.vtk'
+start_file = 'last-200fine01'
 start_from_file = True
 #start_from_file = False
 
@@ -110,7 +110,7 @@ def  move_cylinder2(_nodes, _y, _y_max, _f_0, _t, _dt):
 
 if start_from_file:
     import meshio
-    temp_file = meshio.read('last/'+start_file)
+    temp_file = meshio.read('last/'+start_file+'.vtk')
     vx = temp_file.point_data['Velocity'][:,0]
     vy = temp_file.point_data['Velocity'][:,1]
     Psi_new = temp_file.point_data['Psi'][:,0]
