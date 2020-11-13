@@ -29,7 +29,7 @@ cwd = os.getcwd()
 start_from_file = False
 
 
-msh_file = "cylinder"
+msh_file = "triangle"
 sim_case = 'flowAroundCylinder'
 #sim_type='fixed'
 sim_type='moving'
@@ -57,7 +57,7 @@ time_end_read = timer()
 
 print("Read .msh in: ", time_end_read - time_start_read)
 
-dt = 0.05
+dt = 0.02
 steps = 10000
 vtk_steps = 1
 
@@ -66,8 +66,8 @@ v_in = 1
 psi_top = max(y)
 
 p_lagrange = 0.0
-p_smooth = 0.4
-p_exp = 1.6
+p_smooth = 0.6
+p_exp = 1.4
 
 param = {'Re':Re, 'dt':dt, 'Steps':steps, 'p_lagrange':p_lagrange, \
             'p_smooth':p_smooth, 'p_exp':p_exp ,\
@@ -270,7 +270,7 @@ for t in range(0, int(steps/vtk_steps)):
                                                      mesh.boundary_nodes,
                                                      omega_bc_value)
 
-        F_omega = np.dot(M / dt, Wz_dep) + omega_bc_RHS /Re
+        F_omega = np.dot(M / dt, Wz_dep) + omega_bc_RHS # /Re
         for i in mesh.boundary_nodes:
             F_omega[i] = omega_bc_value[i]
 
