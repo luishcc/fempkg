@@ -174,12 +174,9 @@ K, M, Gx, Gy = fem_matrix(mesh)
 Minv = linalg.inv(M)
 
 for t in range(0, int(steps/vtk_steps)):
-    noise = sp.random.rand(NN)* v_in * 0.0005
     for tt in range(vtk_steps):
         iter += 1
-        if iter <=20:
-            vy = vy * noise
-            vx = vx * noise
+
         time_start_loop = timer()
         print()
         print("Solving System " + str((float(iter/10000)/(steps-1))*100) + "%")
